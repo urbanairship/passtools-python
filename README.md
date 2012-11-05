@@ -1,7 +1,7 @@
 passtools-python
 ==============
 
-Official Python SDK for the PassTools API The SDK make is easy to manage Apple Passbook passes through the PassTools API.
+Official Python SDK for the PassTools API
 
 ## Resources 
 
@@ -30,7 +30,7 @@ The pass personalization and generation will be handled by your script via the P
 
 * Now let's write the script: 
 
-In all of your scripts, start by instantiating a pt_service.Service object, passing it your API key. Your API key is private, and allows you secure API access to your Templates, Passes, and related information. To obtain your API key, contact PassTools at help@passtools.com. 
+In all of your scripts, start by instantiating a pt_service.Service object, passing it your API key. Your API key is private, and allows you secure API access to your Templates, Passes, and related information. To obtain your API key, contact PassTools at help@passtools.com 
 
 ```python
 from passtools import pt_service, pt_pass
