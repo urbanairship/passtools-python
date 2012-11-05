@@ -1,4 +1,4 @@
 passtoolsapi-python-sdk
 =======================
 
-Official Python SDK for the Passtools.com API
+Official Python SDK for the PassTools API
