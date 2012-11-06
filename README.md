@@ -11,12 +11,23 @@ Official Python SDK for the PassTools API
 
 ## Installation
 
+You can use easy-install:
+
+`easy-install PassTools`
+
+-or-
+
 * Download the archive
 * Unzip and untar
+
 `gunzip < PassTools-1.0.0.tar.gz | tar xf -`
+
 * cd into the new directory
+
 `cd PassTools-1.0.0`
+
 * Run setup
+
 `python setup.py install`
 
 ## Example Usage
