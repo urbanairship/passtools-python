@@ -71,7 +71,7 @@ new_pass = pt_pass.Pass(5, the_template.fields_model)
 ```
 
 And finally, you can download the pass...
-(the file _must_ have a ".pkpass' extension to be properly handled when delivered to your customer's iOS device.)
+(the file _must_ have a '.pkpass' extension to be properly handled when delivered to your customer's iOS device.)
 
 ```python
 new_pass.download("/tmp/Marie_Lie.pkpass")
