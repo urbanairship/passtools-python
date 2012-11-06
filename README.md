@@ -17,7 +17,7 @@ You can use easy-install:
 
 -or-
 
-* Download the archive
+* Download the archive from http://pypi.python.org/pypi/PassTools/1.0.0
 * Unzip and untar
 
 `gunzip < PassTools-1.0.0.tar.gz | tar xf -`
