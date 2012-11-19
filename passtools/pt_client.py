@@ -26,8 +26,6 @@ import pt_service
 
 the_logger = logging.getLogger('')
 
-base_url = "https://api.passtools.com/v1"
-
 #########################
 # CLASS PassToolsClient
 # 
@@ -128,7 +126,7 @@ class PassToolsClient(object):
         @return: HTTP request status code and response data as json.
         """
         # Assemble request url
-        request_url = "%s%s?api_key=%s" % (base_url, request_url_frag, pt_service.api_key)
+        request_url = "%s%s?api_key=%s" % (pt_service.base_url, request_url_frag, pt_service.api_key)
 
         # Append any request data
         for keyName in request_data_dict:
@@ -171,7 +169,7 @@ class PassToolsClient(object):
         @return: HTTP request status code and response data as json.
         """
         # Assemble request url
-        request_url = "%s%s" % (base_url, request_url_frag)
+        request_url = "%s%s" % (pt_service.base_url, request_url_frag)
 
         request_data_dict = copy.deepcopy(request_data)
         # Append api_key to request
@@ -213,7 +211,7 @@ class PassToolsClient(object):
             response_data_dict = json.loads(response_data, encoding="ISO-8859-1")
         return response_code, response_data_dict
 
-    def pt_put(self, request_url_frag, request_data):
+    def pt_put(self, request_url_frag, request_data = {}):
         """
         Make an HTTP PUT request of specified URL
 
@@ -224,7 +222,7 @@ class PassToolsClient(object):
         @return: HTTP request status code and response data as json.
         """
         # Assemble request url
-        request_url = "%s%s" % (base_url, request_url_frag)
+        request_url = "%s%s" % (pt_service.base_url, request_url_frag)
 
 
         request_data_dict = copy.deepcopy(request_data)
@@ -251,7 +249,7 @@ class PassToolsClient(object):
 
         return response_code, response_data
 
-    def pt_put_json(self, request_url, request_data):
+    def pt_put_json(self, request_url, request_data = {}):
         """
         Make an HTTP PUT request of specified URL
 
@@ -265,6 +263,55 @@ class PassToolsClient(object):
         if response_code == 200:
             response_data_json = json.loads(response_data, encoding="ISO-8859-1")
             the_logger.debug("pt_put response:\n%s" %
+                             json.dumps(response_data, sort_keys = True, indent = 2))
+        return response_code, response_data_json
+
+    def pt_delete(self, request_url_frag, request_data_dict):
+        """
+        Make an HTTP DELETE request of specified URL
+
+        @type request_url_frag: str
+        @param request_url_frag: target URL (base_url will be prepended)
+        @type request_data: dict
+        @param request_data: any desired URL parameters
+        @return: HTTP request status code and response data as json.
+        """
+        # Assemble request url
+        request_url = "%s%s?api_key=%s" % (pt_service.base_url, request_url_frag, pt_service.api_key)
+
+        # Append any request data
+        for keyName in request_data_dict:
+            request_url += "&" + keyName + "=" + str(request_data_dict[keyName])
+
+        # Prepare headers
+        headers = {}
+        headers['Content-Type'] = 'application/x-www-form-urlencoded'
+        headers['Accept'] = '*/*'
+
+        # create a request
+        req = urllib2.Request(request_url)
+        req.get_method = lambda: 'DELETE'
+        the_logger.debug("pt_put request_url: %s" % request_url)
+
+        # and make the request
+        response_code, response_data = self.__run_request(req)
+
+        return response_code, response_data
+
+    def pt_delete_json(self, request_url, request_data):
+        """
+        Make an HTTP DELETE request of specified URL
+
+        @type request_url: str
+        @param request_url: target URL (base_url will be prepended)
+        @type request_data: dict
+        @param request_data: any desired URL parameters
+        @return: HTTP request status code and response data as python dict.
+        """
+        response_code, response_data = self.pt_delete(request_url, request_data)
+        if response_code == 200:
+            response_data_json = json.loads(response_data, encoding="ISO-8859-1")
+            the_logger.debug("pt_delete response:\n%s" %
                              json.dumps(response_data, sort_keys = True, indent = 2))
         return response_code, response_data_json
 

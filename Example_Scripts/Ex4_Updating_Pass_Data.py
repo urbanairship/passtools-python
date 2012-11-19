@@ -33,7 +33,7 @@ the_service = pt_service.Service(api_key)
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.CRITICAL)
 
 # Retrieve the current form of the pass, using the pass ID.
-current_pass_id = 0
+current_pass_id = your_pass_number_here
 current_pass = the_service.get_pass(current_pass_id)
 
 # Let's a copy of the fields to operate on
@@ -46,15 +46,14 @@ pass_copy.pass_fields["exp_date"]["value"] = "12/31/12"
 pass_copy.pass_fields["offer"]["value"] = "15% Off!!!"
 
 # Call 'update', passing the modifications as input
-updated_pass = the_service.update_pass(pass_copy)
+updated_pass = current_pass.update(pass_copy)
 # Alternatively use this form:
-# updated_pass = current_pass.update(pass_copy)
+#updated_pass = the_service.update_pass(current_pass_id, pass_copy)
 
 # Now download the updated pass, and distribute to your users!
 the_service.download_pass("/tmp/DecemberOffer.pkpass", updated_pass.id)
 # Alternatively use this form:
 # updated_pass.download("/tmp/DecemberOffer.pkpass")
-
 
 # All done logging
 logging.shutdown()

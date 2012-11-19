@@ -17,6 +17,8 @@
 import logging
 from passtools import pt_service, pt_pass
 
+logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.CRITICAL)
+
 # API User:
 # STEP 1: You must request an API key from Tello
 api_key = "your-key-goes-in-here"
@@ -32,7 +34,7 @@ user_db = [{"first_name": "James", "last_name":"Bond"},
            {"first_name": "Johnny", "last_name":"Appleseed"}]
 
 # You'll have selected the template you want to use...you can find the template ID in the Template Builder UI
-selected_template_id = 248
+selected_template_id = your_template_id_goes_here
 
 # Retrieve your template, so you can fill in the fields
 the_template = the_service.get_template(selected_template_id)

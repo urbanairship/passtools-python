@@ -16,6 +16,7 @@ except ImportError:
     import json
 
 from pt_client import PassToolsClient
+from pt_exceptions import *
 
 class Template(object):
 
@@ -55,7 +56,7 @@ class Template(object):
         """
         Retrieve Template specified by template_id
 
-        API call used is v1/template (GET)
+        API call used is v1/template/<template_id> (GET)
 
         @type template_id: int
         @param template_id: ID of the desired template
@@ -63,11 +64,11 @@ class Template(object):
         """
         if template_id is None: template_id = self.id
         if template_id is None:
-            raise InvalidParameterException("get called without required parameter: template_id")
+            raise InvalidParameterException("Template.get() called without required parameter: template_id")
         try:
             test = float(template_id)
-        except ValueError, TypeError:
-            raise InvalidParameterException("get called with non-numeric parameter: template_id ('%s')" % template_id)
+        except ValueError:
+            raise InvalidParameterException("Template.get() called with non-numeric parameter: template_id ('%s')" % template_id)
 
         new_template = None
         request_url = "/template/%s" % (str(template_id))
@@ -80,19 +81,47 @@ class Template(object):
             new_template.fields_model = response_data_dict["fieldsModel"]
         return new_template
 
-    def list(self):
+    def count(self):
+        """
+        Retrieve count of existing templates created by owner of API-key
+
+        API call used is v1/template/headers (GET)
+
+        @return: Integer
+        """
+        request_url = "/template/headers"
+        response_code, response_data_dict = self.api_client.pt_get_dict(request_url)
+
+        ret_val = 0
+        if response_code == 200:
+            ret_val = int(response_data_dict["count"])
+
+        return ret_val
+
+    def list(self, **kwargs):
         """
         Retrieve list of existing templates created by owner of API-key
+        Optional parameters are translated into query-modifiers
+
         Note that list() returns abbreviated form of templates. Use get() to retrieve full template.
 
         API call used is v1/template/headers (GET)
 
+        @type pageSize: int
+        @param pageSize: Maximum length of list to return [Optional; Default = 10]
+        @type page: int
+        @param page: 1-based index of page into list, based on page_size [Optional; Default = 1]
+        @type order: string
+        @param order: Name of field on which to sort list [Optional; From (ID, Name, Created, Updated)]
+        @type direction: string
+        @param direction: Direction which to sort list [Optional; From (ASC, DESC); Default = DESC]
         @return: List of pt_template.Template instances
         """
+        request_dict = kwargs
         template_list = []
         dict_list = []
         request_url = "/template/headers"
-        response_code, response_data_dict = self.api_client.pt_get_dict(request_url)
+        response_code, response_data_dict = self.api_client.pt_get_dict(request_url, request_dict)
         if response_code == 200:
             if "templateHeaders" in response_data_dict:
                 dict_list = response_data_dict["templateHeaders"]
@@ -104,3 +133,30 @@ class Template(object):
                 new_template.fields_model = {}
                 template_list.append(new_template)
         return template_list
+
+    def delete(self, template_id = None):
+        """
+        delete existing template
+
+        API call used is v1/template/<template_id> (DELETE)
+
+        @type template_id: int
+        @param template_id: ID of the template to delete [Optional: If not supplied, = self.id]
+        @return: None
+        """
+        if template_id is None:
+            template_id = self.id
+        try:
+            test = float(template_id)
+        except TypeError:
+            raise InvalidParameterException("Template.delete() called with non-numeric parameter: template_id ('%s')" % template_id)
+
+        request_url = "/template/%s" % (str(template_id))
+        response_code, response_data = self.api_client.pt_delete(request_url, {})
+        if response_code == 200:
+            self.api_client = PassToolsClient()
+            self.id = None
+            self.name = None
+            self.description = None
+            self.fields_model = {}
+

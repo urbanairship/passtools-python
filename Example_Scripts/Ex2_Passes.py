@@ -3,12 +3,19 @@
 # Using the PassTools API
 # Example2: Working with Passes
 #
+# For this script to run as intended, you should
+# create a new template just before running. That template should
+# have at least one primary field (named "primary1") and
+# one secondary field (named "user_first_name").
+# And you should have created one pass from that template.
+#
 # Copyright 2012, Tello, Inc.
 ##########################################
 
-import logging
 import copy
+import logging
 from passtools import pt_service, pt_pass
+import sys
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.CRITICAL)
 
@@ -21,15 +28,15 @@ api_key = "your-key-goes-in-here"
 # This is required!
 the_service = pt_service.Service(api_key)
 
-# First, we'll use 'list' to retrieve a list of all templates we own (in abbreviated format)
+# First, we'll use 'list' to retrieve a list of all passes we own (in abbreviated format)
 # Note that, as with templates, the sort order of the list is most-recent-first.
 print 25*"#"
-print "Retrieve list of all existing Templates owned by this user"
-pass_list = the_service.list_all_passes()
+print "Retrieve list of all existing Passes owned by this user"
+pass_list = the_service.list_passes()
 the_word = "pass" + "es"*(len(pass_list)!=1)
 print "Got a list of %d %s for this user!" % (len(pass_list), the_word)
 if len(pass_list) > 0:
-    print "Here's the most recent one: (remember that pass_fields will be None for items returned by 'list')"
+    print "Here's the most recent one: (remember that 'pass_fields' will be None for items returned by 'list')"
     print pass_list[0]
 print 25*"#"
 
@@ -45,7 +52,7 @@ print 25*"#"
 # Start by retrieving a template using the same method used in Ex1_Templates.py
 # The first two steps are a bit contrived, since you would probably know the ID of the template
 # you wanted to use, but for this example we'll get the whole list and use the latest
-template_list = the_service.list_all_templates()
+template_list = the_service.list_templates()
 the_template_id = template_list[0].id
 
 the_template = the_service.get_template(the_template_id)
@@ -69,7 +76,7 @@ the_template = the_service.get_template(the_template_id)
 new_pass = pt_pass.Pass(the_template_id, the_template.fields_model)
 
 print 25*"#"
-print "New Pass"
+print "New Pass from template ID %s" % the_template_id
 print new_pass
 print 25*"#"
 
@@ -86,10 +93,10 @@ print 25*"#"
 # Alternatively, the pt_service class can download passes specified by ID
 print 25*"#"
 print "Downloading an id-specified Pass from the service..."
-the_service.download_pass("/tmp/New_Pass.pkpass", new_pass.id)
+the_service.download_pass("/tmp/New_Pass_2.pkpass", new_pass.id)
 print 25*"#"
 
-# Finally, we'll update an existing pass, using--surprise!--the 'update' method. In this case, we use the fields
+# Next, we'll update an existing pass, using--surprise!--the 'update' method. In this case, we use the fields
 # from the existing pass, modify them, and call update. In typical usage, you might call 'get' above to retrieve a
 # pass to use as input...we'll the pass we just created, so the script output will allow you to compare before/after update.
 # Make a copy of the fields to operate on
@@ -108,6 +115,22 @@ print 25*"#"
 # and any changes you passed in have been incorporated.
 # If you send the updated pass to a user who has already installed the previous version,
 # they'll see an "Update" button instead of an "Add" button in the iOS UI.
+
+# Finally, let's delete the pass:
+print 25*"#"
+deleted_id = updated_pass.id
+print "Delete Pass %s" % deleted_id
+updated_pass.delete()
+# Alternatively: the_service.delete_pass(deleted_id)
+
+# And then try to retrieve it:
+print "Attempted to retrieve deleted pass #%s" % deleted_id
+try:
+    the_retrieved_pass = the_service.get_pass(deleted_id)
+except:
+    info = sys.exc_info()
+    print info[1]
+print 25*"#"
 
 # All done logging
 logging.shutdown()
