@@ -217,7 +217,7 @@ object --+
         <tr>
           <td><span class="summary-sig"><a href="passtools.pt_client.PassToolsClient-class.html#pt_put" class="summary-sig-name">pt_put</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">request_url_frag</span>,
-        <span class="summary-sig-arg">request_data</span>)</span><br />
+        <span class="summary-sig-arg">request_data</span>=<span class="summary-sig-default">{}</span>)</span><br />
       Make an HTTP PUT request of specified URL</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="passtools.pt_client-pysrc.html#PassToolsClient.pt_put">source&nbsp;code</a></span>
@@ -236,10 +236,48 @@ object --+
         <tr>
           <td><span class="summary-sig"><a href="passtools.pt_client.PassToolsClient-class.html#pt_put_json" class="summary-sig-name">pt_put_json</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">request_url</span>,
-        <span class="summary-sig-arg">request_data</span>)</span><br />
+        <span class="summary-sig-arg">request_data</span>=<span class="summary-sig-default">{}</span>)</span><br />
       Make an HTTP PUT request of specified URL</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="passtools.pt_client-pysrc.html#PassToolsClient.pt_put_json">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="passtools.pt_client.PassToolsClient-class.html#pt_delete" class="summary-sig-name">pt_delete</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">request_url_frag</span>,
+        <span class="summary-sig-arg">request_data_dict</span>)</span><br />
+      Make an HTTP DELETE request of specified URL</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="passtools.pt_client-pysrc.html#PassToolsClient.pt_delete">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="passtools.pt_client.PassToolsClient-class.html#pt_delete_json" class="summary-sig-name">pt_delete_json</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">request_url</span>,
+        <span class="summary-sig-arg">request_data</span>)</span><br />
+      Make an HTTP DELETE request of specified URL</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="passtools.pt_client-pysrc.html#PassToolsClient.pt_delete_json">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -431,7 +469,7 @@ object --+
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">pt_put</span>(<span class="sig-arg">self</span>,
         <span class="sig-arg">request_url_frag</span>,
-        <span class="sig-arg">request_data</span>)</span>
+        <span class="sig-arg">request_data</span>=<span class="sig-default">{}</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="passtools.pt_client-pysrc.html#PassToolsClient.pt_put">source&nbsp;code</a></span>&nbsp;
@@ -459,7 +497,7 @@ object --+
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">pt_put_json</span>(<span class="sig-arg">self</span>,
         <span class="sig-arg">request_url</span>,
-        <span class="sig-arg">request_data</span>)</span>
+        <span class="sig-arg">request_data</span>=<span class="sig-default">{}</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="passtools.pt_client-pysrc.html#PassToolsClient.pt_put_json">source&nbsp;code</a></span>&nbsp;
@@ -467,6 +505,62 @@ object --+
   </tr></table>
   
   <p>Make an HTTP PUT request of specified URL</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>request_url</code></strong> (str) - target URL (base_url will be prepended)</li>
+        <li><strong class="pname"><code>request_data</code></strong> (dict) - any desired URL parameters</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>HTTP request status code and response data as python dict.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="pt_delete"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">pt_delete</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">request_url_frag</span>,
+        <span class="sig-arg">request_data_dict</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="passtools.pt_client-pysrc.html#PassToolsClient.pt_delete">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Make an HTTP DELETE request of specified URL</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>request_url_frag</code></strong> (str) - target URL (base_url will be prepended)</li>
+        <li><strong class="pname"><code>request_data</code></strong> (dict) - any desired URL parameters</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>HTTP request status code and response data as json.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="pt_delete_json"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">pt_delete_json</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">request_url</span>,
+        <span class="sig-arg">request_data</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="passtools.pt_client-pysrc.html#PassToolsClient.pt_delete_json">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Make an HTTP DELETE request of specified URL</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
@@ -505,7 +599,7 @@ object --+
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Nov  5 14:12:26 2012
+    Generated by Epydoc 3.0.1 on Sun Nov 18 19:42:51 2012
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

@@ -88,7 +88,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="passtools.pt_service.Service-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">my_api_key</span>)</span><br />
+        <span class="summary-sig-arg">my_api_key</span>,
+        <span class="summary-sig-arg">my_base_url</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">https://api.passtools.com/v1</code><code class="variable-quote">'</code></span>)</span><br />
       Init new pt_service.Service instance</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="passtools.pt_service-pysrc.html#Service.__init__">source&nbsp;code</a></span>
@@ -140,11 +141,47 @@ object --+
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="passtools.pt_service.Service-class.html#list_all_templates" class="summary-sig-name">list_all_templates</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Retrieve list of existing templates created by owner of API-key Note 
-      that list() returns abbreviated form of templates.</td>
+          <td><span class="summary-sig"><a href="passtools.pt_service.Service-class.html#delete_template" class="summary-sig-name">delete_template</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">template_id</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Delete Template specified by template_id</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="passtools.pt_service-pysrc.html#Service.list_all_templates">source&nbsp;code</a></span>
+            <span class="codelink"><a href="passtools.pt_service-pysrc.html#Service.delete_template">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="passtools.pt_service.Service-class.html#count_templates" class="summary-sig-name">count_templates</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Retrieve count of existing templates created by owner of API-key</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="passtools.pt_service-pysrc.html#Service.count_templates">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="passtools.pt_service.Service-class.html#list_templates" class="summary-sig-name">list_templates</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
+      Retrieve list of existing templates created by owner of API-key 
+      Optional parameters are translated into query-modifiers</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="passtools.pt_service-pysrc.html#Service.list_templates">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -178,10 +215,29 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="passtools.pt_service.Service-class.html#update_pass" class="summary-sig-name">update_pass</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pass_id</span>,
         <span class="summary-sig-arg">update_fields</span>=<span class="summary-sig-default">None</span>)</span><br />
       Update existing pass</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="passtools.pt_service-pysrc.html#Service.update_pass">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="passtools.pt_service.Service-class.html#push_pass" class="summary-sig-name">push_pass</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">target_pass_id</span>)</span><br />
+      Push update to existing pass</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="passtools.pt_service-pysrc.html#Service.push_pass">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -213,11 +269,51 @@ object --+
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="passtools.pt_service.Service-class.html#list_all_passes" class="summary-sig-name">list_all_passes</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Retrieve list of existing passes created by owner of API-key Note 
-      that list() returns abbreviated form of passes.</td>
+          <td><span class="summary-sig"><a href="passtools.pt_service.Service-class.html#delete_pass" class="summary-sig-name">delete_pass</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pass_id</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Delete existing pass with specified ID</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="passtools.pt_service-pysrc.html#Service.list_all_passes">source&nbsp;code</a></span>
+            <span class="codelink"><a href="passtools.pt_service-pysrc.html#Service.delete_pass">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="passtools.pt_service.Service-class.html#count_passes" class="summary-sig-name">count_passes</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">template_id</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Retrieve count of existing passes created by owner of API-key If 
+      template_id is specified, count only passes associated with that 
+      template Other parameters are translated into query-modifiers</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="passtools.pt_service-pysrc.html#Service.count_passes">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="passtools.pt_service.Service-class.html#list_passes" class="summary-sig-name">list_passes</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
+      Retrieve list of existing passes created by owner of API-key If 
+      template_id is specified, retrieve only passes associated with that 
+      template Other parameters are translated into query-modifiers</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="passtools.pt_service-pysrc.html#Service.list_passes">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -314,7 +410,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">my_api_key</span>)</span>
+        <span class="sig-arg">my_api_key</span>,
+        <span class="sig-arg">my_base_url</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">https://api.passtools.com/v1</code><code class="variable-quote">'</code></span>)</span>
     <br /><em class="fname">(Constructor)</em>
   </h3>
   </td><td align="right" valign="top"
@@ -385,25 +482,85 @@ object --+
   </dl>
 </td></tr></table>
 </div>
-<a name="list_all_templates"></a>
+<a name="delete_template"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">list_all_templates</span>(<span class="sig-arg">self</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">delete_template</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">template_id</span>=<span class="sig-default">None</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="passtools.pt_service-pysrc.html#Service.list_all_templates">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="passtools.pt_service-pysrc.html#Service.delete_template">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Retrieve list of existing templates created by owner of API-key Note 
-  that list() returns abbreviated form of templates. Use get() to retrieve 
-  full template.</p>
+  <p>Delete Template specified by template_id</p>
+  <p>API call used is v1/template (DELETE)</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>template_id</code></strong> (int) - ID of the template to delete</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>None</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="count_templates"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">count_templates</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="passtools.pt_service-pysrc.html#Service.count_templates">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Retrieve count of existing templates created by owner of API-key</p>
+  <p>API call used is v1/template (GET)</p>
+  <dl class="fields">
+    <dt>Returns:</dt>
+        <dd>Integer</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="list_templates"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">list_templates</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="passtools.pt_service-pysrc.html#Service.list_templates">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Retrieve list of existing templates created by owner of API-key 
+  Optional parameters are translated into query-modifiers</p>
+  <p>Note that list() returns abbreviated form of templates. Use get() to 
+  retrieve full template.</p>
   <p>API call used is v1/template/headers (GET)</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>pageSize</code></strong> (int) - Maximum length of list to return [Optional; Default = 10]</li>
+        <li><strong class="pname"><code>page</code></strong> (int) - 1-based index of page into list, based on page_size [Optional; 
+          Default = 1]</li>
+        <li><strong class="pname"><code>order</code></strong> (string) - Name of field on which to sort list [Optional; From (ID, Name, 
+          Created, Updated)]</li>
+        <li><strong class="pname"><code>direction</code></strong> (string) - Direction which to sort list [Optional; From (ASC, DESC)]</li>
+    </ul></dd>
     <dt>Returns:</dt>
         <dd>List of pt_template.Template instances</dd>
   </dl>
@@ -447,6 +604,7 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">update_pass</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">pass_id</span>,
         <span class="sig-arg">update_fields</span>=<span class="sig-default">None</span>)</span>
   </h3>
   </td><td align="right" valign="top"
@@ -459,11 +617,39 @@ object --+
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>pass_id</code></strong> (int) - ID of pt_pass.Pass to update</li>
         <li><strong class="pname"><code>update_fields</code></strong> (dict) - template_fields_model dict of the template used to create new 
           pass</li>
     </ul></dd>
     <dt>Returns:</dt>
         <dd>pt_pass.Pass instance</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="push_pass"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">push_pass</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">target_pass_id</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="passtools.pt_service-pysrc.html#Service.push_pass">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Push update to existing pass</p>
+  <p>API call used is v1/pass/&lt;pass_id&gt;/push (PUT)</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>pass_id</code></strong> (int) - ID of pt_pass.Pass to update</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>Dict</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -494,25 +680,94 @@ object --+
   </dl>
 </td></tr></table>
 </div>
-<a name="list_all_passes"></a>
+<a name="delete_pass"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">list_all_passes</span>(<span class="sig-arg">self</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">delete_pass</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">pass_id</span>=<span class="sig-default">None</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="passtools.pt_service-pysrc.html#Service.list_all_passes">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="passtools.pt_service-pysrc.html#Service.delete_pass">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Retrieve list of existing passes created by owner of API-key Note that
-  list() returns abbreviated form of passes. Use get() to retrieve full 
-  pass.</p>
+  <p>Delete existing pass with specified ID</p>
+  <p>API call used is v1/pass/&lt;pass_id&gt; (DELETE)</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>pass_id</code></strong> (int) - ID of pt_pass.Pass to delete</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>None</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="count_passes"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">count_passes</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">template_id</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="passtools.pt_service-pysrc.html#Service.count_passes">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Retrieve count of existing passes created by owner of API-key If 
+  template_id is specified, count only passes associated with that template
+  Other parameters are translated into query-modifiers</p>
   <p>API call used is v1/pass (GET)</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>templateId</code></strong> (int) - ID of the template used to create new pass</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>Integer</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="list_passes"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">list_passes</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="passtools.pt_service-pysrc.html#Service.list_passes">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Retrieve list of existing passes created by owner of API-key If 
+  template_id is specified, retrieve only passes associated with that 
+  template Other parameters are translated into query-modifiers</p>
+  <p>Note that list() returns abbreviated form of passes. Use get() to 
+  retrieve full pass.</p>
+  <p>API call used is v1/pass (GET)</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>templateId</code></strong> (int) - ID of the template used to create new pass</li>
+        <li><strong class="pname"><code>pageSize</code></strong> (int) - Maximum length of list to return [Optional; Default = 10]</li>
+        <li><strong class="pname"><code>page</code></strong> (int) - 1-based index of page into list, based on page_size [Optional; 
+          Default = 1]</li>
+        <li><strong class="pname"><code>order</code></strong> (string) - Name of field on which to sort list [Optional; From (ID, Name, 
+          Created, Updated)]</li>
+        <li><strong class="pname"><code>direction</code></strong> (string) - Direction which to sort list [Optional; From (ASC, DESC)]</li>
+    </ul></dd>
     <dt>Returns:</dt>
         <dd>List of pt_pass.Pass instances</dd>
   </dl>
@@ -574,7 +829,7 @@ object --+
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Nov  5 14:12:26 2012
+    Generated by Epydoc 3.0.1 on Sun Nov 18 19:42:51 2012
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

@@ -142,11 +142,47 @@ object --+
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="passtools.pt_template.Template-class.html#list" class="summary-sig-name">list</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Retrieve list of existing templates created by owner of API-key Note 
-      that list() returns abbreviated form of templates.</td>
+          <td><span class="summary-sig"><a href="passtools.pt_template.Template-class.html#count" class="summary-sig-name">count</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Retrieve count of existing templates created by owner of API-key</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="passtools.pt_template-pysrc.html#Template.count">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="passtools.pt_template.Template-class.html#list" class="summary-sig-name">list</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
+      Retrieve list of existing templates created by owner of API-key 
+      Optional parameters are translated into query-modifiers</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="passtools.pt_template-pysrc.html#Template.list">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="passtools.pt_template.Template-class.html#delete" class="summary-sig-name">delete</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">template_id</span>=<span class="summary-sig-default">None</span>)</span><br />
+      delete existing template</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="passtools.pt_template-pysrc.html#Template.delete">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -288,7 +324,7 @@ object --+
   </tr></table>
   
   <p>Retrieve Template specified by template_id</p>
-  <p>API call used is v1/template (GET)</p>
+  <p>API call used is v1/template/&lt;template_id&gt; (GET)</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
@@ -299,6 +335,28 @@ object --+
   </dl>
 </td></tr></table>
 </div>
+<a name="count"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">count</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="passtools.pt_template-pysrc.html#Template.count">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Retrieve count of existing templates created by owner of API-key</p>
+  <p>API call used is v1/template/headers (GET)</p>
+  <dl class="fields">
+    <dt>Returns:</dt>
+        <dd>Integer</dd>
+  </dl>
+</td></tr></table>
+</div>
 <a name="list"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -306,20 +364,60 @@ object --+
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">list</span>(<span class="sig-arg">self</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">list</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="passtools.pt_template-pysrc.html#Template.list">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Retrieve list of existing templates created by owner of API-key Note 
-  that list() returns abbreviated form of templates. Use get() to retrieve 
-  full template.</p>
+  <p>Retrieve list of existing templates created by owner of API-key 
+  Optional parameters are translated into query-modifiers</p>
+  <p>Note that list() returns abbreviated form of templates. Use get() to 
+  retrieve full template.</p>
   <p>API call used is v1/template/headers (GET)</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>pageSize</code></strong> (int) - Maximum length of list to return [Optional; Default = 10]</li>
+        <li><strong class="pname"><code>page</code></strong> (int) - 1-based index of page into list, based on page_size [Optional; 
+          Default = 1]</li>
+        <li><strong class="pname"><code>order</code></strong> (string) - Name of field on which to sort list [Optional; From (ID, Name, 
+          Created, Updated)]</li>
+        <li><strong class="pname"><code>direction</code></strong> (string) - Direction which to sort list [Optional; From (ASC, DESC); Default
+          = DESC]</li>
+    </ul></dd>
     <dt>Returns:</dt>
         <dd>List of pt_template.Template instances</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="delete"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">delete</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">template_id</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="passtools.pt_template-pysrc.html#Template.delete">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>delete existing template</p>
+  <p>API call used is v1/template/&lt;template_id&gt; (DELETE)</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>template_id</code></strong> (int) - ID of the template to delete [Optional: If not supplied, = 
+          self.id]</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>None</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -350,7 +448,7 @@ object --+
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Nov  5 14:12:26 2012
+    Generated by Epydoc 3.0.1 on Sun Nov 18 19:42:51 2012
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
