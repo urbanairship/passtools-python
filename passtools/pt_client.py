@@ -4,7 +4,7 @@
 # 
 # Interface to PassTools REST API
 #
-# Copyright 2012, Tello, Inc.
+# Copyright 2013, Urban Airship, Inc.
 ##########################################
 """
 HTTP interface to PassTools REST API, used indirectly, via other PassTools classes.
@@ -18,11 +18,12 @@ except ImportError:
 
 import copy
 import logging
+import re
+import sys
 import urllib
 import urllib2
 
 from pt_exceptions import *
-import pt_service
 
 the_logger = logging.getLogger('')
 
@@ -32,10 +33,13 @@ the_logger = logging.getLogger('')
 #
 #########################
 class PassToolsClient(object):
-
-    def __api_key_check(self):
-        if not pt_service.api_key:
-            raise AuthenticationException("No API secret key provided. Did you create a pt_service instance?")
+    
+    def __init__(self, api_key, base_url):
+        if not api_key:
+            raise AuthenticationException("No API secret key provided. Cannot continue.")
+            sys.exit(1)
+        self.api_key = api_key
+        self.base_url = base_url
 
     def __dispatch_exception(self, response_code, fail_msg, request):
         if response_code == 200:
@@ -55,6 +59,8 @@ class PassToolsClient(object):
             raise InvalidRequestException(message = fail_msg, param=params, http_status = response_code)
         elif response_code == 401:
             raise AuthenticationException(message = fail_msg, http_status = response_code)
+        elif response_code == 404:
+            raise InvalidRequestException(message = fail_msg, param=params, http_status = response_code)
         elif response_code == 406:
             raise InvalidRequestException(message = fail_msg, param=params, http_status = response_code)
         elif response_code == 429:
@@ -92,16 +98,23 @@ class PassToolsClient(object):
                 if response_code < 500:
                 # If not a server error, read error details from the returned page
                     try:
-                        err_page_dict = json.load(e)
-                        if 'description' in err_page_dict:
-                            fail_msg += (" %s" % err_page_dict['description'])
-                        if 'details' in err_page_dict:
-                            if err_page_dict['details'] == "field errors" and "fieldErrors" in err_page_dict:
-                                fail_msg += " Details:\n"
-                                for err_item in err_page_dict['fieldErrors']:
-                                    fail_msg += err_item["message"] + "\n"
-                            else:
-                                fail_msg += (" Details: '%s'" % err_page_dict['details'])
+                        err_page_info = e.read()
+                        if err_page_info.startswith("{"):
+                            err_page_dict = json.loads(err_page_info)
+                            if 'description' in err_page_dict:
+                                fail_msg += (" %s" % err_page_dict['description'])
+                            if 'details' in err_page_dict:
+                                if err_page_dict['details'] == "field errors" and "fieldErrors" in err_page_dict:
+                                    fail_msg += " Details:\n"
+                                    for err_item in err_page_dict['fieldErrors']:
+                                        fail_msg += err_item["message"] + "\n"
+                                else:
+                                    fail_msg += (" Details: '%s'" % err_page_dict['details'])
+                        else:
+                            match = re.search("(Problem accessing \S*) Reason:", err_page_info)
+                            if match:
+                                fail_msg += (" Details: '%s'" % match.group(1))
+
                     except:
                         raise
                 else:
@@ -126,7 +139,7 @@ class PassToolsClient(object):
         @return: HTTP request status code and response data as json.
         """
         # Assemble request url
-        request_url = "%s%s?api_key=%s" % (pt_service.base_url, request_url_frag, pt_service.api_key)
+        request_url = "%s%s?api_key=%s" % (self.base_url, request_url_frag, self.api_key)
 
         # Append any request data
         for keyName in request_data_dict:
@@ -154,6 +167,7 @@ class PassToolsClient(object):
         @return: HTTP request status code and response data as python dict.
         """
         response_code, response_data = self.pt_get_json(request_url, request_data_dict)
+        response_data_dict = {}
         if response_code == 200:
             response_data_dict = json.loads(response_data, encoding="ISO-8859-1")
         return response_code, response_data_dict
@@ -169,12 +183,11 @@ class PassToolsClient(object):
         @return: HTTP request status code and response data as json.
         """
         # Assemble request url
-        request_url = "%s%s" % (pt_service.base_url, request_url_frag)
+        request_url = "%s%s" % (self.base_url, request_url_frag)
 
         request_data_dict = copy.deepcopy(request_data)
         # Append api_key to request
-        self.__api_key_check()
-        request_data_dict["api_key"] = pt_service.api_key
+        request_data_dict["api_key"] = self.api_key
 
         # Format the input data
         encoded_request_data = urllib.urlencode(request_data_dict)
@@ -207,6 +220,7 @@ class PassToolsClient(object):
         @return: HTTP request status code and response data as python dict.
         """
         response_code, response_data = self.pt_post_json(request_url, request_data)
+        response_data_dict = {}
         if response_code == 200:
             response_data_dict = json.loads(response_data, encoding="ISO-8859-1")
         return response_code, response_data_dict
@@ -222,13 +236,12 @@ class PassToolsClient(object):
         @return: HTTP request status code and response data as json.
         """
         # Assemble request url
-        request_url = "%s%s" % (pt_service.base_url, request_url_frag)
+        request_url = "%s%s" % (self.base_url, request_url_frag)
 
 
         request_data_dict = copy.deepcopy(request_data)
         # Append api_key to request
-        self.__api_key_check()
-        request_data_dict["api_key"] = pt_service.api_key
+        request_data_dict["api_key"] = self.api_key
 
         # Format the input data
         encoded_request_data = urllib.urlencode(request_data_dict)
@@ -260,6 +273,7 @@ class PassToolsClient(object):
         @return: HTTP request status code and response data as python dict.
         """
         response_code, response_data = self.pt_put(request_url, request_data)
+        response_data_json = None
         if response_code == 200:
             response_data_json = json.loads(response_data, encoding="ISO-8859-1")
             the_logger.debug("pt_put response:\n%s" %
@@ -277,7 +291,7 @@ class PassToolsClient(object):
         @return: HTTP request status code and response data as json.
         """
         # Assemble request url
-        request_url = "%s%s?api_key=%s" % (pt_service.base_url, request_url_frag, pt_service.api_key)
+        request_url = "%s%s?api_key=%s" % (self.base_url, request_url_frag, self.api_key)
 
         # Append any request data
         for keyName in request_data_dict:
@@ -309,6 +323,7 @@ class PassToolsClient(object):
         @return: HTTP request status code and response data as python dict.
         """
         response_code, response_data = self.pt_delete(request_url, request_data)
+        response_data_json = None
         if response_code == 200:
             response_data_json = json.loads(response_data, encoding="ISO-8859-1")
             the_logger.debug("pt_delete response:\n%s" %

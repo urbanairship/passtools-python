@@ -3,36 +3,41 @@
 # Using the PassTools API
 # Example2: Working with Passes
 #
+# PREPARATION:
 # For this script to run as intended, you should
 # create a new template just before running. That template should
 # have at least one primary field (named "primary1") and
 # one secondary field (named "user_first_name").
 # And you should have created one pass from that template.
 #
-# Copyright 2012, Tello, Inc.
+# Copyright 2013, Urban Airship, Inc.
 ##########################################
 
 import copy
 import logging
-from passtools import pt_service, pt_pass
 import sys
+
+from passtools import PassTools
+from passtools.pt_pass import Pass
+from passtools.pt_template import Template
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.CRITICAL)
 
 # API User:
-# STEP 1: You must request an API key from Tello
-api_key = "your-key-goes-in-here"
+# STEP 1: Retrieve your API key from your Account view on the PassTools website
+my_api_key = "your-key-goes-in-here"
 
 # STEP 2:
-# You'll always instantiate a service api object, providing your api key.
+# You'll always configure the api, providing your api key.
 # This is required!
-the_service = pt_service.Service(api_key)
+PassTools.configure(api_key = my_api_key)
 
-# First, we'll use 'list' to retrieve a list of all passes we own (in abbreviated format)
-# Note that, as with templates, the sort order of the list is most-recent-first.
+# First, we'll use 'list' to retrieve a list pass headers we own (in abbreviated format)
+# Note that, as with templates, default sort order of the list is most-recent-first
+# and default page-size = 10
 print 25*"#"
-print "Retrieve list of all existing Passes owned by this user"
-pass_list = the_service.list_passes()
+print "Retrieve list of Passes owned by this user"
+pass_list = Pass.list()
 the_word = "pass" + "es"*(len(pass_list)!=1)
 print "Got a list of %d %s for this user!" % (len(pass_list), the_word)
 if len(pass_list) > 0:
@@ -42,9 +47,10 @@ print 25*"#"
 
 # Next, we'll retrieve the full form of that pass
 # You might retrieve a pass, for example, in preparation for updating it.
-the_retrieved_pass = the_service.get_pass(pass_list[0].id)
 print 25*"#"
-print "Retrieved Pass #%s" % pass_list[0].id
+latest_pass_id = pass_list[0].id
+print "Retrieving Pass #%s" % latest_pass_id
+the_retrieved_pass = Pass.get(latest_pass_id)
 print the_retrieved_pass
 print 25*"#"
 
@@ -52,10 +58,12 @@ print 25*"#"
 # Start by retrieving a template using the same method used in Ex1_Templates.py
 # The first two steps are a bit contrived, since you would probably know the ID of the template
 # you wanted to use, but for this example we'll get the whole list and use the latest
-template_list = the_service.list_templates()
+print "listing templates"
+template_list = Template.list()
 the_template_id = template_list[0].id
+print "Latest template id:", the_template_id
 
-the_template = the_service.get_template(the_template_id)
+the_template = Template.get(the_template_id)
 
 # With the template in hand, you could modify any values for fields you defined in that template, so
 # that the modifications would appear in the pass you create
@@ -73,10 +81,11 @@ the_template = the_service.get_template(the_template_id)
 # Of course, we haven't changed any fields (since we don't know what's in your template!),
 # so this pass will look like the template, but by changing the fields as described above,
 # you'll be able to generate one form for many customers, or a unique pass for each customer, or anything in between.
-new_pass = pt_pass.Pass(the_template_id, the_template.fields_model)
+
 
 print 25*"#"
-print "New Pass from template ID %s" % the_template_id
+print "Creating new Pass from template ID %s" % the_template_id
+new_pass = Pass.create(the_template_id, the_template.fields_model)
 print new_pass
 print 25*"#"
 
@@ -86,28 +95,31 @@ print 25*"#"
 # IMPORTANT: you'll want to be sure to give your passes the '.pkpass' extension, or they will not be properly recognized
 # when your customer receives them.
 print 25*"#"
-print "Downloading a Pass from an instance..."
-new_pass.download("/tmp/New_Pass.pkpass")
-print 25*"#"
-
-# Alternatively, the pt_service class can download passes specified by ID
-print 25*"#"
 print "Downloading an id-specified Pass from the service..."
-the_service.download_pass("/tmp/New_Pass_2.pkpass", new_pass.id)
+Pass.download(new_pass.id, "/tmp/New_Pass_2.pkpass")
 print 25*"#"
 
 # Next, we'll update an existing pass, using--surprise!--the 'update' method. In this case, we use the fields
 # from the existing pass, modify them, and call update. In typical usage, you might call 'get' above to retrieve a
 # pass to use as input...we'll the pass we just created, so the script output will allow you to compare before/after update.
 # Make a copy of the fields to operate on
-temp_pass = copy.deepcopy(new_pass)
 
+pass_fields = copy.deepcopy(new_pass.pass_dict["passFields"])
+print 25*"#"
+print "Start pass update test..."
 # modify fields here...as an example:
-#     temp_pass.pass_fields["primary1"]["value"] = "Updated Primary!"
+if "primary1" in pass_fields:
+    pass_fields["primary1"]["value"] = "Updated Primary!"
+else:
+    print "No primary1 to update"
+if "relevantDate" in pass_fields:
+    pass_fields["relevantDate"]["value"] = "2013-01-30T18:30-08:00"
+else:
+    print "No relevantDate to update"
 
 # Call 'update', passing the modifications as input.
-updated_pass = new_pass.update(temp_pass)
-print 25*"#"
+updated_pass = Pass.update(new_pass.id, pass_fields)
+
 print "Updated Pass..."
 print updated_pass
 print 25*"#"
@@ -116,17 +128,23 @@ print 25*"#"
 # If you send the updated pass to a user who has already installed the previous version,
 # they'll see an "Update" button instead of an "Add" button in the iOS UI.
 
+print 25*"#"
+print "Downloading updated pass..."
+ret_val = Pass.download(new_pass.id, "/tmp/Updated_Pass.pkpass")
+print "ret_val from download", ret_val
+print 25*"#"
+
 # Finally, let's delete the pass:
 print 25*"#"
 deleted_id = updated_pass.id
 print "Delete Pass %s" % deleted_id
-updated_pass.delete()
-# Alternatively: the_service.delete_pass(deleted_id)
+ret_val = Pass.delete(deleted_id)
+print "ret_val from delete:", ret_val
 
 # And then try to retrieve it:
 print "Attempted to retrieve deleted pass #%s" % deleted_id
 try:
-    the_retrieved_pass = the_service.get_pass(deleted_id)
+    the_retrieved_pass = Pass.get(deleted_id)
 except:
     info = sys.exc_info()
     print info[1]

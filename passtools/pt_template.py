@@ -3,7 +3,7 @@
 #
 # Models PassTools Template
 #
-# Copyright 2012, Tello, Inc.
+# Copyright 2013, Urban Airship, Inc.
 ##########################################
 
 """
@@ -15,16 +15,15 @@ try:
 except ImportError:
     import json
 
-from pt_client import PassToolsClient
-from pt_exceptions import *
+from passtools import PassTools
 
 class Template(object):
 
     def __init__(self, template_id = None):
         """
         Init, optionally populate, new pt_template.Template instance
-        If template_id and template_fields_model are supplied, will retrieve complete instance,
-        else just create new empty instance.
+        If template_id is supplied, will retrieve complete instance,
+        otherwise just create new empty instance.
 
         API call used is v1/template (GET)
 
@@ -32,78 +31,55 @@ class Template(object):
         @param template_id: ID of the desired template [Optional]
         @return: None
         """
-        super(Template, self).__init__()
-        self.api_client = PassToolsClient()
-        self.id = template_id
-        self.name = None
-        self.description = None
+        self.header = {}
         self.fields_model = {}
-        if self.id:
-            new_template = self.get(self.id)
+        if template_id:
+            new_template = self.get(template_id)
             if new_template:
-                self.name = new_template.name
-                self.description = new_template.description
+                self.header = new_template.header
                 self.fields_model = new_template.fields_model
 
-    def __str__(self):
-        pretty_template_fields = json.dumps(self.fields_model, sort_keys = True, indent = 2, encoding="ISO-8859-1")
-        return "id=%s\nname=%s\ndescription:%s\nfields_model:%s" % (self.id,
-                                                                    self.name,
-                                                                    self.description,
-                                                                    pretty_template_fields)
+    @property
+    def id(self):
+        the_id = None
+        if self.header and "id" in self.header:
+            the_id = int(self.header["id"])
+        return the_id
 
-    def get(self, template_id = None):
+    def __str__(self):
+        pretty_header_fields = json.dumps(self.header, sort_keys = True, indent = 2, encoding = "ISO-8859-1")
+        pretty_template_fields = json.dumps(self.fields_model, sort_keys = True, indent = 2, encoding = "ISO-8859-1")
+        return "header:%s\nfields_model:%s" % (pretty_header_fields, pretty_template_fields)
+
+    @classmethod
+    def get(cls, template_id):
         """
-        Retrieve Template specified by template_id
+        Retrieve full-form template specified by template_id
 
         API call used is v1/template/<template_id> (GET)
 
         @type template_id: int
-        @param template_id: ID of the desired template
-        @return: pt_template. Template instance
+        @param template_id: ID of the template to retrieve
+        @return: pt_template.Template instance
         """
-        if template_id is None: template_id = self.id
-        if template_id is None:
-            raise InvalidParameterException("Template.get() called without required parameter: template_id")
-        try:
-            test = float(template_id)
-        except ValueError:
-            raise InvalidParameterException("Template.get() called with non-numeric parameter: template_id ('%s')" % template_id)
+        request_url = "/template/%s" % (str(template_id))
+        response_code, response_data_dict = PassTools.request_client.pt_get_dict(request_url)
 
         new_template = None
-        request_url = "/template/%s" % (str(template_id))
-        response_code, response_data_dict = self.api_client.pt_get_dict(request_url)
         if response_code == 200:
             new_template = Template()
-            new_template.id = int(response_data_dict["templateHeader"]["id"])
-            new_template.name = response_data_dict["templateHeader"]["name"]
-            new_template.description = response_data_dict["templateHeader"]["description"]
+            new_template.header = response_data_dict["templateHeader"]
             new_template.fields_model = response_data_dict["fieldsModel"]
+
         return new_template
 
-    def count(self):
-        """
-        Retrieve count of existing templates created by owner of API-key
-
-        API call used is v1/template/headers (GET)
-
-        @return: Integer
-        """
-        request_url = "/template/headers"
-        response_code, response_data_dict = self.api_client.pt_get_dict(request_url)
-
-        ret_val = 0
-        if response_code == 200:
-            ret_val = int(response_data_dict["count"])
-
-        return ret_val
-
-    def list(self, **kwargs):
+    @classmethod
+    def list(cls, **kwargs):
         """
         Retrieve list of existing templates created by owner of API-key
         Optional parameters are translated into query-modifiers
 
-        Note that list() returns abbreviated form of templates. Use get() to retrieve full template.
+        Note that list() returns header-only form of templates. Use get() to retrieve full template.
 
         API call used is v1/template/headers (GET)
 
@@ -118,45 +94,35 @@ class Template(object):
         @return: List of pt_template.Template instances
         """
         request_dict = kwargs
-        template_list = []
-        dict_list = []
         request_url = "/template/headers"
-        response_code, response_data_dict = self.api_client.pt_get_dict(request_url, request_dict)
+        response_code, response_data_dict = PassTools.request_client.pt_get_dict(request_url, request_dict)
+
+        template_list = []
         if response_code == 200:
+            dict_list = []
             if "templateHeaders" in response_data_dict:
                 dict_list = response_data_dict["templateHeaders"]
-            for template_item in dict_list:
+            for header_dict in dict_list:
                 new_template = Template()
-                new_template.id = int(template_item["id"])
-                new_template.name = template_item["name"]
-                new_template.description = template_item["description"]
-                new_template.fields_model = {}
+                new_template.header = header_dict
                 template_list.append(new_template)
+
         return template_list
 
-    def delete(self, template_id = None):
+    @classmethod
+    def delete(cls, template_id):
         """
         delete existing template
 
         API call used is v1/template/<template_id> (DELETE)
 
         @type template_id: int
-        @param template_id: ID of the template to delete [Optional: If not supplied, = self.id]
-        @return: None
+        @param template_id: ID of the template to delete
+        @return: Response data
         """
-        if template_id is None:
-            template_id = self.id
-        try:
-            test = float(template_id)
-        except TypeError:
-            raise InvalidParameterException("Template.delete() called with non-numeric parameter: template_id ('%s')" % template_id)
 
         request_url = "/template/%s" % (str(template_id))
-        response_code, response_data = self.api_client.pt_delete(request_url, {})
-        if response_code == 200:
-            self.api_client = PassToolsClient()
-            self.id = None
-            self.name = None
-            self.description = None
-            self.fields_model = {}
+        response_code, response_data = PassTools.request_client.pt_delete(request_url, {})
+
+        return response_data
 
