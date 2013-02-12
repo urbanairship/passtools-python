@@ -81,15 +81,18 @@ object --+
     </table>
   </td>
 </tr>
-<tr class="private">
+<tr>
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="__api_key_check"></a><span class="summary-sig-name">__api_key_check</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td><span class="summary-sig"><a href="passtools.pt_client.PassToolsClient-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">api_key</span>,
+        <span class="summary-sig-arg">base_url</span>)</span><br />
+      x.__init__(...) initializes x; see help(type(x)) for signature</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="passtools.pt_client-pysrc.html#PassToolsClient.__api_key_check">source&nbsp;code</a></span>
+            <span class="codelink"><a href="passtools.pt_client-pysrc.html#PassToolsClient.__init__">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -141,7 +144,7 @@ object --+
         <tr>
           <td><span class="summary-sig"><a href="passtools.pt_client.PassToolsClient-class.html#pt_get_json" class="summary-sig-name">pt_get_json</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">request_url_frag</span>,
-        <span class="summary-sig-arg">request_data_dict</span>=<span class="summary-sig-default">{}</span>)</span><br />
+        <span class="summary-sig-arg">request_data_dict</span>=<span class="summary-sig-default"><code class="variable-group">{</code><code class="variable-group">}</code></span>)</span><br />
       Make an HTTP GET request of specified URL</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="passtools.pt_client-pysrc.html#PassToolsClient.pt_get_json">source&nbsp;code</a></span>
@@ -160,7 +163,7 @@ object --+
         <tr>
           <td><span class="summary-sig"><a href="passtools.pt_client.PassToolsClient-class.html#pt_get_dict" class="summary-sig-name">pt_get_dict</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">request_url</span>,
-        <span class="summary-sig-arg">request_data_dict</span>=<span class="summary-sig-default">{}</span>)</span><br />
+        <span class="summary-sig-arg">request_data_dict</span>=<span class="summary-sig-default"><code class="variable-group">{</code><code class="variable-group">}</code></span>)</span><br />
       Make an HTTP GET request of specified URL</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="passtools.pt_client-pysrc.html#PassToolsClient.pt_get_dict">source&nbsp;code</a></span>
@@ -217,7 +220,7 @@ object --+
         <tr>
           <td><span class="summary-sig"><a href="passtools.pt_client.PassToolsClient-class.html#pt_put" class="summary-sig-name">pt_put</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">request_url_frag</span>,
-        <span class="summary-sig-arg">request_data</span>=<span class="summary-sig-default">{}</span>)</span><br />
+        <span class="summary-sig-arg">request_data</span>=<span class="summary-sig-default"><code class="variable-group">{</code><code class="variable-group">}</code></span>)</span><br />
       Make an HTTP PUT request of specified URL</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="passtools.pt_client-pysrc.html#PassToolsClient.pt_put">source&nbsp;code</a></span>
@@ -236,7 +239,7 @@ object --+
         <tr>
           <td><span class="summary-sig"><a href="passtools.pt_client.PassToolsClient-class.html#pt_put_json" class="summary-sig-name">pt_put_json</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">request_url</span>,
-        <span class="summary-sig-arg">request_data</span>=<span class="summary-sig-default">{}</span>)</span><br />
+        <span class="summary-sig-arg">request_data</span>=<span class="summary-sig-default"><code class="variable-group">{</code><code class="variable-group">}</code></span>)</span><br />
       Make an HTTP PUT request of specified URL</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="passtools.pt_client-pysrc.html#PassToolsClient.pt_put_json">source&nbsp;code</a></span>
@@ -292,7 +295,6 @@ object --+
       <code>__format__</code>,
       <code>__getattribute__</code>,
       <code>__hash__</code>,
-      <code>__init__</code>,
       <code>__new__</code>,
       <code>__reduce__</code>,
       <code>__reduce_ex__</code>,
@@ -348,6 +350,32 @@ object --+
   </td>
 </tr>
 </table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">api_key</span>,
+        <span class="sig-arg">base_url</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="passtools.pt_client-pysrc.html#PassToolsClient.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>x.__init__(...) initializes x; see help(type(x)) for signature</p>
+  <dl class="fields">
+    <dt>Overrides:
+        object.__init__
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
 <a name="pt_get_json"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -357,7 +385,7 @@ object --+
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">pt_get_json</span>(<span class="sig-arg">self</span>,
         <span class="sig-arg">request_url_frag</span>,
-        <span class="sig-arg">request_data_dict</span>=<span class="sig-default">{}</span>)</span>
+        <span class="sig-arg">request_data_dict</span>=<span class="sig-default"><code class="variable-group">{</code><code class="variable-group">}</code></span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="passtools.pt_client-pysrc.html#PassToolsClient.pt_get_json">source&nbsp;code</a></span>&nbsp;
@@ -385,7 +413,7 @@ object --+
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">pt_get_dict</span>(<span class="sig-arg">self</span>,
         <span class="sig-arg">request_url</span>,
-        <span class="sig-arg">request_data_dict</span>=<span class="sig-default">{}</span>)</span>
+        <span class="sig-arg">request_data_dict</span>=<span class="sig-default"><code class="variable-group">{</code><code class="variable-group">}</code></span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="passtools.pt_client-pysrc.html#PassToolsClient.pt_get_dict">source&nbsp;code</a></span>&nbsp;
@@ -469,7 +497,7 @@ object --+
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">pt_put</span>(<span class="sig-arg">self</span>,
         <span class="sig-arg">request_url_frag</span>,
-        <span class="sig-arg">request_data</span>=<span class="sig-default">{}</span>)</span>
+        <span class="sig-arg">request_data</span>=<span class="sig-default"><code class="variable-group">{</code><code class="variable-group">}</code></span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="passtools.pt_client-pysrc.html#PassToolsClient.pt_put">source&nbsp;code</a></span>&nbsp;
@@ -497,7 +525,7 @@ object --+
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">pt_put_json</span>(<span class="sig-arg">self</span>,
         <span class="sig-arg">request_url</span>,
-        <span class="sig-arg">request_data</span>=<span class="sig-default">{}</span>)</span>
+        <span class="sig-arg">request_data</span>=<span class="sig-default"><code class="variable-group">{</code><code class="variable-group">}</code></span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="passtools.pt_client-pysrc.html#PassToolsClient.pt_put_json">source&nbsp;code</a></span>&nbsp;
@@ -599,7 +627,7 @@ object --+
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Sun Nov 18 19:42:51 2012
+    Generated by Epydoc 3.0.1 on Mon Feb 11 18:27:38 2013
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
