@@ -107,26 +107,9 @@ object --+
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="get_template_id"></a><span class="summary-sig-name">get_template_id</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td><span class="summary-sig"><a href="passtools.pt_template.Template-class.html#id" class="summary-sig-name">id</a>(<span class="summary-sig-arg">self</span>)</span></td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="passtools.pt_template-pysrc.html#Template.get_template_id">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="set_template_id"></a><span class="summary-sig-name">set_template_id</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">new_id</span>)</span></td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="passtools.pt_template-pysrc.html#Template.set_template_id">source&nbsp;code</a></span>
+            <span class="codelink"><a href="passtools.pt_template-pysrc.html#Template.id">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -259,13 +242,6 @@ object --+
     </table>
   </td>
 </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a href="passtools.pt_template.Template-class.html#id" class="summary-name">id</a>
-    </td>
-  </tr>
   <tr>
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
@@ -325,6 +301,29 @@ object --+
   </dl>
 </td></tr></table>
 </div>
+<a name="id"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">id</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="passtools.pt_template-pysrc.html#Template.id">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@property</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
 <a name="__str__"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -373,7 +372,7 @@ object --+
         <li><strong class="pname"><code>template_id</code></strong> (int) - ID of the template to retrieve</li>
     </ul></dd>
     <dt>Returns:</dt>
-        <dd>pt_template.Template instance</dd>
+        <dd>json form of template full-form description</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -410,7 +409,7 @@ object --+
           = DESC]</li>
     </ul></dd>
     <dt>Returns:</dt>
-        <dd>List of pt_template.Template instances</dd>
+        <dd>json form of list of template header descriptions</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -438,44 +437,7 @@ object --+
         <li><strong class="pname"><code>template_id</code></strong> (int) - ID of the template to delete</li>
     </ul></dd>
     <dt>Returns:</dt>
-        <dd>Response data</dd>
-  </dl>
-</td></tr></table>
-</div>
-<br />
-<!-- ==================== PROPERTY DETAILS ==================== -->
-<a name="section-PropertyDetails"></a>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="table-header">
-  <td colspan="2" class="table-header">
-    <table border="0" cellpadding="0" cellspacing="0" width="100%">
-      <tr valign="top">
-        <td align="left"><span class="table-header">Property Details</span></td>
-        <td align="right" valign="top"
-         ><span class="options">[<a href="#section-PropertyDetails"
-         class="privatelink" onclick="toggle_private();"
-         >hide private</a>]</span></td>
-      </tr>
-    </table>
-  </td>
-</tr>
-</table>
-<a name="id"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <h3 class="epydoc">id</h3>
-  
-  <dl class="fields">
-    <dt>Get Method:</dt>
-    <dd class="value"><span class="summary-sig"><a href="passtools.pt_template.Template-class.html#get_template_id" class="summary-sig-name">get_template_id</a>(<span class="summary-sig-arg">self</span>)</span>
-    </dd>
-    <dt>Set Method:</dt>
-    <dd class="value"><span class="summary-sig"><a href="passtools.pt_template.Template-class.html#set_template_id" class="summary-sig-name">set_template_id</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">new_id</span>)</span>
-    </dd>
+        <dd>json form of response data</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -506,7 +468,7 @@ object --+
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Feb 11 18:27:38 2013
+    Generated by Epydoc 3.0.1 on Wed Feb 13 17:58:29 2013
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
