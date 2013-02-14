@@ -14,14 +14,11 @@
 ##########################################
 
 import copy
-import logging
 import sys
 
 from passtools import PassTools
 from passtools.pt_pass import Pass
 from passtools.pt_template import Template
-
-logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.CRITICAL)
 
 # API User:
 # STEP 1: Retrieve your API key from your Account view on the PassTools website
@@ -32,46 +29,54 @@ my_api_key = "your-key-goes-in-here"
 # This is required!
 PassTools.configure(api_key = my_api_key)
 
-# First, we'll use 'list' to retrieve a list pass headers we own (in abbreviated format)
+# First, we'll use 'list' to retrieve a list of pass headers we own (in abbreviated format)
 # Note that, as with templates, default sort order of the list is most-recent-first
 # and default page-size = 10
 print 25*"#"
-print "Retrieve list of Passes owned by this user"
-pass_list = Pass.list()
-the_word = "pass" + "es"*(len(pass_list)!=1)
-print "Got a list of %d %s for this user!" % (len(pass_list), the_word)
-if len(pass_list) > 0:
-    print "Here's the most recent one: (remember that 'pass_fields' will be None for items returned by 'list')"
-    print pass_list[0]
-print 25*"#"
+print "Retrieve default list of existing Passes owned by this user"
+print "Note that the list is accompanied by some meta-info about total pass count, page-size, etc."
+print "And that the list of pass descriptions proper is under the 'Passes' key\n"
+print "Note also that you can retrieve passes associated with a specific template"
 
-# Next, we'll retrieve the full form of that pass
+list_response = Pass.list()
+print "Total count of passes for this user:", list_response['Count']
+print "Page size", list_response['PageSize']
+print "Page number", list_response['Page']
+print "Order by", list_response['OrderField']
+print "Order direction", list_response['OrderDirection']
+for item in list_response['Passes']:
+    print item
+print 25*"#", "\n"
+
+# Next, we'll retrieve the full form of a pass
 # You might retrieve a pass, for example, in preparation for updating it.
+# Normally, you'd know the ID of the pass you wanted--we'll just grab an id from the list above
 print 25*"#"
-latest_pass_id = pass_list[0].id
-print "Retrieving Pass #%s" % latest_pass_id
-the_retrieved_pass = Pass.get(latest_pass_id)
-print the_retrieved_pass
+the_pass_id = int(list_response['Passes'][0]['id'])
+
+print "Retrieving Pass #%s" % the_pass_id
+get_response = Pass.get(the_pass_id)
+
+print "Retrieved Pass..."
+print get_response
 print 25*"#"
 
 # Now let's create a new pass from a template.
 # Start by retrieving a template using the same method used in Ex1_Templates.py
 # The first two steps are a bit contrived, since you would probably know the ID of the template
 # you wanted to use, but for this example we'll get the whole list and use the latest
-print "listing templates"
-template_list = Template.list()
-the_template_id = template_list[0].id
-print "Latest template id:", the_template_id
-
-the_template = Template.get(the_template_id)
+list_response = Template.list()
+the_template_id = int(list_response['templateHeaders'][0]["id"])
+get_response = Template.get(the_template_id)
+the_template_fields_model = get_response["fieldsModel"]
 
 # With the template in hand, you could modify any values for fields you defined in that template, so
 # that the modifications would appear in the pass you create
 # As an example, you might change a primary field value
 # Here's one using a default key name:
-#    the_template.fields_model["primary1"]["value"] = "10% Off!"
+#    the_template_fields_model["primary1"]["value"] = "10% Off!"
 # And in this one, we set 'user_first_name' as a custom key name when we created the template
-#    the_template.fields_model["user_first_name"]["value"] = "John"
+#    the_template_fields_model["user_first_name"]["value"] = "John"
 
 # Keep in mind:
 #   - If you marked a field as "Required", you'll have to give it a value here, unless you gave it a default
@@ -82,11 +87,10 @@ the_template = Template.get(the_template_id)
 # so this pass will look like the template, but by changing the fields as described above,
 # you'll be able to generate one form for many customers, or a unique pass for each customer, or anything in between.
 
-
 print 25*"#"
 print "Creating new Pass from template ID %s" % the_template_id
-new_pass = Pass.create(the_template_id, the_template.fields_model)
-print new_pass
+create_response = Pass.create(the_template_id, the_template_fields_model)
+print create_response
 print 25*"#"
 
 # There are a few ways to deliver passes to customers (and more to come), several of which involve you distributing
@@ -95,8 +99,9 @@ print 25*"#"
 # IMPORTANT: you'll want to be sure to give your passes the '.pkpass' extension, or they will not be properly recognized
 # when your customer receives them.
 print 25*"#"
+new_pass_id = create_response['id']
 print "Downloading an id-specified Pass from the service..."
-Pass.download(new_pass.id, "/tmp/New_Pass_2.pkpass")
+Pass.download(new_pass_id, "/tmp/New_Pass.pkpass")
 print 25*"#"
 
 # Next, we'll update an existing pass, using--surprise!--the 'update' method. In this case, we use the fields
@@ -104,7 +109,7 @@ print 25*"#"
 # pass to use as input...we'll the pass we just created, so the script output will allow you to compare before/after update.
 # Make a copy of the fields to operate on
 
-pass_fields = copy.deepcopy(new_pass.pass_dict["passFields"])
+pass_fields = copy.deepcopy(create_response["passFields"])
 print 25*"#"
 print "Start pass update test..."
 # modify fields here...as an example:
@@ -118,38 +123,45 @@ else:
     print "No relevantDate to update"
 
 # Call 'update', passing the modifications as input.
-updated_pass = Pass.update(new_pass.id, pass_fields)
+update_response = Pass.update(new_pass_id, pass_fields)
+print "Response from pass update..."
+print update_response
+
+get_response = Pass.get(update_response['id'])
 
 print "Updated Pass..."
-print updated_pass
-print 25*"#"
-# The update will be returned; note that the ID is the same, the serial number is the same,
+print get_response
+# Note that, after the update, the ID is the same, the serial number is the same,
 # and any changes you passed in have been incorporated.
 # If you send the updated pass to a user who has already installed the previous version,
 # they'll see an "Update" button instead of an "Add" button in the iOS UI.
 
+# Btw, you can instantiate a Pass, which gives you some convenience features like pretty-print:
+updated_pass = Pass()
+updated_pass.pass_dict = get_response
+
+print "Updated pass as object"
+print updated_pass
+print 25*"#"
+
+# Passes can be downloaded, so you can distribute them via email, for example
 print 25*"#"
 print "Downloading updated pass..."
-ret_val = Pass.download(new_pass.id, "/tmp/Updated_Pass.pkpass")
+ret_val = Pass.download(new_pass_id, "/tmp/Updated_Pass.pkpass")
 print "ret_val from download", ret_val
 print 25*"#"
 
-# Finally, let's delete the pass:
+# Finally, let's delete a pass:
 print 25*"#"
-deleted_id = updated_pass.id
-print "Delete Pass %s" % deleted_id
-ret_val = Pass.delete(deleted_id)
+print "Delete Pass %s" % new_pass_id
+ret_val = Pass.delete(new_pass_id)
 print "ret_val from delete:", ret_val
 
 # And then try to retrieve it:
-print "Attempted to retrieve deleted pass #%s" % deleted_id
+print "Attempted to retrieve deleted pass #%s" % new_pass_id
 try:
-    the_retrieved_pass = Pass.get(deleted_id)
+    the_retrieved_pass = Pass.get(new_pass_id)
 except:
     info = sys.exc_info()
     print info[1]
 print 25*"#"
-
-# All done logging
-logging.shutdown()
-

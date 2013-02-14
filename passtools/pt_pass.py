@@ -16,7 +16,9 @@ try:
 except ImportError:
     import json
 
+import pt_client
 from passtools import PassTools
+
 
 class Pass(object):
     def __init__(self, template_id=None, template_fields_model_dict=None):
@@ -67,19 +69,12 @@ class Pass(object):
         @param template_id: ID of the template used to create new pass
         @type template_fields_model_dict: dict
         @param template_fields_model_dict: template_fields_model dict of the template used to create new pass
-        @return: pt_pass.Pass instance
+        @return: json form of template full-form description
         """
 
-        request_url = "/pass/%s" % (str(template_id))
+        request_url = "/pass/%d" % int(template_id)
         request_dict = {"json": json.dumps(template_fields_model_dict, encoding="ISO-8859-1")}
-        response_code, response_data_dict = PassTools.request_client.pt_post_dict(request_url, request_dict)
-
-        new_pass = None
-        if response_code == 200:
-            new_pass = Pass()
-            new_pass.pass_dict = response_data_dict
-
-        return new_pass
+        return pt_client.pt_post(request_url, request_dict)
 
     @classmethod
     def update(cls, pass_id, update_fields):
@@ -88,20 +83,16 @@ class Pass(object):
 
         API call used is v1/pass/<pass_id> (PUT)
 
+        @type pass_id: int
+        @param pass_id: ID of desired Pass
         @type update_fields: dict
         @param update_fields: Pass.pass_dict dict
-        @return: pt_pass.Pass instance
+        @return: json form of template full-form description
         """
 
-        request_url = "/pass/%s" % (str(pass_id))
+        request_url = "/pass/%d" % int(pass_id)
         request_dict = {"json": json.dumps(update_fields, encoding="ISO-8859-1")}
-        response_code, response_data = PassTools.request_client.pt_put(request_url, request_dict)
-
-        updated_pass = None
-        if response_code == 200:
-            updated_pass = cls.get(pass_id)
-
-        return updated_pass
+        return pt_client.pt_put(request_url, request_dict)
 
     @classmethod
     def push_update(cls, pass_id):
@@ -111,14 +102,12 @@ class Pass(object):
         API call used is v1/pass/<pass_id>/push (PUT)
 
         @type pass_id: int
-        @param pass_id: ID of desired pt_pass.Pass.
-        @return: Dict
+        @param pass_id: ID of desired Pass
+        @return: Response data
         """
 
-        request_url = "/pass/%s/push" % (str(pass_id))
-        response_code, response_data = PassTools.request_client.pt_put(request_url)
-
-        return response_data
+        request_url = "/pass/%d/push" % int(pass_id)
+        return pt_client.pt_put(request_url)
 
     @classmethod
     def get(cls, pass_id):
@@ -128,19 +117,12 @@ class Pass(object):
         API call used is v1/pass/<pass_id> (GET)
 
         @type pass_id: int
-        @param pass_id: ID of desired pt_pass.Pass.
-        @return: pt_pass.Pass instance
+        @param pass_id: ID of desired Pass
+        @return: json form of template full-form description
         """
 
-        request_url = "/pass/%s" % (str(pass_id))
-        response_code, response_data_dict = PassTools.request_client.pt_get_dict(request_url)
-
-        new_pass = None
-        if response_code == 200:
-            new_pass = Pass()
-            new_pass.pass_dict = response_data_dict
-
-        return new_pass
+        request_url = "/pass/%d" % int(pass_id)
+        return pt_client.pt_get(request_url, {})
 
     @classmethod
     def list(cls, **kwargs):
@@ -163,21 +145,12 @@ class Pass(object):
         @param order: Name of field on which to sort list [Optional; From (ID, Name, Created, Updated)]
         @type direction: string
         @param direction: Direction which to sort list [Optional; From (ASC, DESC); Default = DESC]
-        @return: List of pt_pass.Pass instances
+        @return: json form of list of pass header descriptions
         """
 
         request_dict = kwargs
         request_url = "/pass"
-        response_code, response_data_dict = PassTools.request_client.pt_get_dict(request_url, request_dict)
-
-        pass_list = []
-        if response_code == 200:
-            for pass_dict in response_data_dict["Passes"]:
-                new_pass = Pass()
-                new_pass.pass_dict = pass_dict
-                pass_list.append(new_pass)
-
-        return pass_list
+        return pt_client.pt_get(request_url, request_dict)
 
     @classmethod
     def download(cls, pass_id, destination_path):
@@ -186,18 +159,20 @@ class Pass(object):
 
         API call used is v1/pass/<pass_id>/download (GET)
 
+        @type pass_id: int
+        @param pass_id: ID of desired Pass
         @type destination_path: str
         @param destination_path: path to receive pass file. Path must exist, and filename must end with ".pkpass"
-        @type pass_id: int
-        @param pass_id: pass_id of pt_pass.Pass instance desired  [Optional: If not supplied, = self.id]
+        @return: Writes pass to filesystem
         """
 
-        request_url = "/pass/%s/download" % (str(pass_id))
-        response_code, response_data = PassTools.request_client.pt_get_json(request_url)
-
-        if response_code == 200:
+        request_url = "/pass/%d/download" % int(pass_id)
+        resp = pt_client.pt_get(request_url)
+        if PassTools.test_mode:
+            return resp
+        elif resp is not None:
             fh = open(destination_path, "wb")
-            fh.write(response_data)
+            fh.write(resp.content)
             fh.close()
 
     @classmethod
@@ -208,14 +183,12 @@ class Pass(object):
         API call used is v1/pass/<pass_id> (DELETE)
 
         @type pass_id: int
-        @param pass_id: ID of the pass to delete
-        @return: None
+        @param pass_id: ID of Pass to delete
+        @return: json form of response data
         """
 
-        request_url = "/pass/%s" % (str(pass_id))
-        response_code, response_data = PassTools.request_client.pt_delete(request_url, {})
-
-        return response_data
+        request_url = "/pass/%d" % int(pass_id)
+        return pt_client.pt_delete(request_url, {})
 
     @classmethod
     def add_locations(cls, pass_id, location_list):
@@ -224,18 +197,16 @@ class Pass(object):
 
         API call used is v1/pass/<pass_id>/locations (POST)
 
-        @type location_list: list
-        @param location_list: list of locations to add
         @type pass_id: int
         @param pass_id: ID of the pass to add locations to
-        @return: Response data
+        @type location_list: list
+        @param location_list: list of locations to add
+        @return: json form of response data
         """
 
-        request_url = "/pass/%s/locations" % (str(pass_id))
+        request_url = "/pass/%d/locations" % int(pass_id)
         request_dict = {"json": json.dumps(location_list, encoding="ISO-8859-1")}
-        response_code, response_data_dict = PassTools.request_client.pt_post_dict(request_url, request_dict)
-
-        return response_data_dict
+        return pt_client.pt_post(request_url, request_dict)
 
     @classmethod
     def delete_location(cls, pass_id, location_id):
@@ -244,15 +215,12 @@ class Pass(object):
 
         API call used is v1/pass/<pass_id>/location/<location_id> (DELETE)
 
-        @type location_id: int
-        @param location_id: ID of the location to delete
         @type pass_id: int
         @param pass_id: ID of the pass to delete from
-        @return: Response data
+        @type location_id: int
+        @param location_id: ID of the location to delete
+        @return: json form of response data
         """
 
-        request_url = "/pass/%s/location/%s" % (str(pass_id), str(location_id))
-        response_code, response_data = PassTools.request_client.pt_delete(request_url, {})
-
-        return response_data
-
+        request_url = "/pass/%d/location/%d" % (int(pass_id), int(location_id))
+        return pt_client.pt_delete(request_url, {})

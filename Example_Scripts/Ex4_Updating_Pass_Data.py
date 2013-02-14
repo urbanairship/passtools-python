@@ -20,12 +20,9 @@
 ##########################################
 
 import copy
-import logging
 
 from passtools import PassTools
 from passtools.pt_pass import Pass
-
-logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.CRITICAL)
 
 # API User:
 # STEP 1: Retrieve your API key from your Account view on the PassTools website
@@ -37,13 +34,15 @@ my_api_key = "your-key-goes-in-here"
 PassTools.configure(api_key = my_api_key)
 
 # Retrieve the current form of the pass, using the pass ID.
-current_pass_id = your_pass_number_here
-current_pass = Pass.get(current_pass_id)
-
-print current_pass
+current_pass_id = 2039
+starting_pass = Pass.get(current_pass_id)
 
 # Let's a copy of the fields to operate on
-pass_fields = copy.deepcopy(current_pass.pass_dict["passFields"])
+pass_fields = copy.deepcopy(starting_pass["passFields"])
+
+print "Starting:"
+print "Offer:", pass_fields["offer"]["value"]
+print "Exp_date:", pass_fields["exp_date"]["value"]
 
 # Now set the new data. We're going to imagine that our initial offer just expired, and we're setting a '15% off'
 # offer to extend 'til the end of the year:
@@ -53,15 +52,14 @@ pass_fields["exp_date"]["value"] = "2013-01-01T12:01Z"
 pass_fields["offer"]["value"] = "15% Off!!!"
 
 # Call 'update', passing the modifications as input
-updated_pass = Pass.update(current_pass.id, pass_fields)
-# Alternatively use this form:
-#updated_pass = the_service.update_pass(current_pass_id, pass_fields)
+update_response = Pass.update(current_pass_id, pass_fields)
+print update_response
 
-print updated_pass
+# At this point, you could retrieve the updated pass, download it, etc.
+updated_pass = Pass.get(current_pass_id)
 
-# Now download the updated pass, and distribute to your users!
-Pass.download(updated_pass.id, "/tmp/UpdatedOffer.pkpass")
+pass_fields = copy.deepcopy(updated_pass["passFields"])
 
-# All done logging
-logging.shutdown()
-
+print "After update:"
+print "Offer:", pass_fields["offer"]["value"]
+print "Exp_date:", pass_fields["exp_date"]["value"]

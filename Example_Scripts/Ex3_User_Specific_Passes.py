@@ -14,13 +14,9 @@
 # Copyright 2013, Urban Airship, Inc.
 ##########################################
 
-import logging
-
 from passtools import PassTools
 from passtools.pt_pass import Pass
 from passtools.pt_template import Template
-
-logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.CRITICAL)
 
 # API User:
 # STEP 1: Retrieve your API key from your Account view on the PassTools website
@@ -39,19 +35,20 @@ user_db = [{"first_name": "James", "last_name":"Bond"},
 # You'll have selected the template you want to use...you can find the template ID in the Template Builder UI
 selected_template_id = 604
 
-# Retrieve your template, so you can fill in the fields
-the_template = Template.get(selected_template_id)
+# Retrieve your template, so you can modify the data and create passes from it
+get_response = Template.get(selected_template_id)
 
-# Now for each user in your DB, grab the user data, populate the template.fields_model, generate a pass and download it:
+the_fields_model = get_response["fieldsModel"]
+
+# Now for each user in your DB, grab the user data, modify the template.fields_model, create a pass and download it:
 for user_record in user_db:
-    the_template.fields_model["fname"]["value"] = user_record["first_name"]
-    the_template.fields_model["lname"]["value"] = user_record["last_name"]
-    new_pass = Pass.create(selected_template_id, the_template.fields_model)
-    Pass.download(new_pass.id,
-                  "/tmp/%s_%s.pkpass" % (user_record["first_name"], user_record["last_name"]))
+    the_fields_model["fname"]["value"] = user_record["first_name"]
+    the_fields_model["lname"]["value"] = user_record["last_name"]
+
+    create_response = Pass.create(selected_template_id, the_fields_model)
+
+    new_pass_id = create_response["id"]
+    print "NEW PASS CREATED. ID: %s, First: %s, Last: %s" % (new_pass_id, user_record["first_name"], user_record["last_name"])
+    Pass.download(new_pass_id, "/tmp/%s_%s.pkpass" % (user_record["first_name"], user_record["last_name"]))
 
 # Now distribute the passes to your users!
-
-# All done logging
-logging.shutdown()
-

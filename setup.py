@@ -8,7 +8,7 @@ except (OSError, IOError):
     description = ''
 
 setup(name = "PassTools",
-    version = '1.0.3',
+    version = '1.0.4',
     description = 'Python SDK for PassTools API',
     author = 'Urban Airship, Inc.',
     author_email = 'help@tello.com',
@@ -20,5 +20,6 @@ setup(name = "PassTools",
                                 'Example_Scripts/Ex5_List_Variations.py',
                                 'Example_Scripts/Ex6_Push_Update.py',
                                 'Example_Scripts/Ex7_Pass_Locations.py',
-                                'Example_Scripts/Ex8_Update_Relevant_Date.py'])]
-    )
+                                'Example_Scripts/Ex8_Update_Relevant_Date.py'])],
+    install_requires = ['requests']
+)

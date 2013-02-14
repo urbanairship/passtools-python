@@ -13,17 +13,15 @@
 # It's even more fun if you add change messages for those fields.
 # Generate a pass from that template.
 # Install that pass on one or more phones, and use the ID of that pass in the script below.
+# DON'T FORGET TO INSTALL THE PASS ON ONE OR MORE DEVICES OR THE PUSH WON'T SUCCEED
 #
 # Copyright 2013, Urban Airship, Inc.
 ##########################################
 
 import copy
-import logging
 
 from passtools import PassTools
 from passtools.pt_pass import Pass
-
-logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.CRITICAL)
 
 # API User:
 # STEP 1: Retrieve your API key from your Account view on the PassTools website
@@ -39,36 +37,37 @@ PassTools.configure(api_key = my_api_key)
 test_pass_id = your-pass-id-goes-here
 
 # Retrieve the full form of that pass
-test_pass = Pass.get(test_pass_id)
 print 25*"#"
-print "Retrieved Pass #%s" % test_pass_id
-print "Initially, primary1 says:", test_pass.pass_dict["passFields"]["primary1"]["value"]
-print "Initially, secondary1 says:", test_pass.pass_dict["passFields"]["secondary1"]["value"]
+print "Retrieving Pass #%s" % test_pass_id
+get_response = Pass.get(test_pass_id)
+
+print "Retrieved Pass..."
+print get_response
 print 25*"#"
 
-# Update the pass...
+# Now update the pass...
 # Make a copy of the fields to operate on
-working_copy = copy.deepcopy(test_pass.pass_dict["passFields"])
+working_copy = copy.deepcopy(get_response["passFields"])
 
 # modify fields here:
 working_copy["primary1"]["value"] = "Push Happens!"
-working_copy["secondary1"]["value"] = "Push Happens!"
+working_copy["secondary1"]["value"] = "Push Happens Again!"
 
 # Call 'update', passing the modifications as input.
-updated_pass = Pass.update(test_pass.id, working_copy)
+update_response = Pass.update(test_pass_id, working_copy)
+print update_response
+
+# Retrieve the updated form of that pass just to prove it was updated
+get_response = Pass.get(test_pass_id)
+
+print "Updated Pass..."
+print get_response
+print 25*"#"
 
 print 25*"#"
-print "Updated Pass after update #%s" % updated_pass.id
-print "After update, primary1 says:", updated_pass.pass_dict["passFields"]["primary1"]["value"]
-print "After update, secondary1 says:", updated_pass.pass_dict["passFields"]["secondary1"]["value"]
-print 25*"#"
-
-# Retrieve the updated form of that pass
-retrieved_pass = Pass.get(updated_pass.id)
-print 25*"#"
-print "Retrieved Pass #%s" % retrieved_pass.id
-print "Retrieved after update, primary1 says:", retrieved_pass.pass_dict["passFields"]["primary1"]["value"]
-print "Retrieved after update, secondary1 says:", retrieved_pass.pass_dict["passFields"]["secondary1"]["value"]
+print "Updated Pass #%s" % test_pass_id
+print "After update, primary1 says:", get_response["passFields"]["primary1"]["value"]
+print "After update, secondary1 says:", get_response["passFields"]["secondary1"]["value"]
 print 25*"#"
 
 # Call 'push' to trigger updates of installed copies of the pass
@@ -76,10 +75,7 @@ print 25*"#"
 # pass should see a notification on their phone.
 # And, of course, viewing the pass should reveal updated information.
 print 25*"#"
-print "Pushing update to Pass #%s" % updated_pass.id
-return_data = Pass.push_update(updated_pass.id)
+print "Pushing update to Pass #%s" % test_pass_id
+return_data = Pass.push_update(test_pass_id)
 print return_data
 print 25*"#"
-
-# All done logging
-logging.shutdown()

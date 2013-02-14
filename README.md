@@ -134,27 +134,28 @@ PassTools.configure(api_key = my_api_key)
 Next, retrieve your newly created template:
 
 ```python
-the_template = Template.get(5);
+template_get_response = Template.get(5)
+template_fields_model = template_get_response['fieldsModel']
 ```
 
 The template object includes a 'fields_model'--a dict comprised of the keys and values you specified when you created the template. As mentioned above, when you defined this template, you assigned custom key names to two secondary fields...so now use those key names to refer to the fields you want to set with your customer information:
 
 ```python
-the_template.fields_model["first_name"]["value"] = "Marie"
-the_template.fields_model["last_name"]["value"] = "Lie"
+template_fields_model["first_name"]["value"] = "Marie"
+template_fields_model["last_name"]["value"] = "Lie"
 ```
 
 Next, create Marie's pass 
 
 ```python
-new_pass = Pass.create(5, the_template.fields_model)
+create_response = Pass.create(5, template_fields_model)
 ```
 
 And finally, you can download the pass...
 (the file _must_ have a ".pkpass' extension to be properly handled when delivered to your customer's iOS device.)
 
 ```python
-Pass.download(new_pass.id, "/tmp/Marie_Lie.pkpass")
+Pass.download(create_response['id'], "/tmp/Marie_Lie.pkpass")
 ```     
 The pass is downloaded to your local filesystem. 
 

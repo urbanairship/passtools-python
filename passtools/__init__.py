@@ -13,20 +13,18 @@ PassTools passes.
 
 """
 
-from pt_client import PassToolsClient
-
 class PassTools(object):
 
-    api_version = "1.0.3"
+    api_version = "1.0.4"
     api_key = None
-    base_url = "https://api.passtools.com/v1"
+    base_url = None
     request_client = None
+    test_mode = False
 
     @classmethod
     def configure(cls, api_key = None, base_url = "https://api.passtools.com/v1"):
         cls.api_key = api_key
         cls.base_url = base_url
-        cls.request_client = PassToolsClient(cls.api_key, cls.base_url)
 
     @classmethod
     def check_service(cls):

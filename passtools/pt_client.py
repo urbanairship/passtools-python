@@ -11,322 +11,131 @@ HTTP interface to PassTools REST API, used indirectly, via other PassTools class
 
 """
 
+import copy
+import requests
+
 try:
     import simplejson as json
 except ImportError:
     import json
 
-import copy
-import logging
-import re
-import sys
-import urllib
-import urllib2
+from passtools import PassTools
 
-from pt_exceptions import *
+SSL_CERT_VERIFY = False
+STD_ENCODING = "ISO-8859-1"
+STD_HEADERS = {'Content-Type':'application/x-www-form-urlencoded', 'Accept':'*/*'}
 
-the_logger = logging.getLogger('')
+def __pt_request(request_func, request_url_frag, request_data = {}):
+    """
+    Base HTTP request handler. Called only indirectly.
 
-#########################
-# CLASS PassToolsClient
-# 
-#
-#########################
-class PassToolsClient(object):
-    
-    def __init__(self, api_key, base_url):
-        if not api_key:
-            raise AuthenticationException("No API secret key provided. Cannot continue.")
-            sys.exit(1)
-        self.api_key = api_key
-        self.base_url = base_url
+    @type request_func: function
+    @param request_func: Function requested
+    @type request_url_frag: str
+    @param request_url_frag: URL fragment (to be appended to base_URL)
+    @type request_data: dict
+    @param request_data: Request parameters
+    @return: json form of template full-form description
+    """
+    if not PassTools.api_key:
+        raise RuntimeError("No API secret key provided. Cannot continue.")
+    request_url = "%s%s" % (PassTools.base_url, request_url_frag)
 
-    def __dispatch_exception(self, response_code, fail_msg, request):
-        if response_code == 200:
-            return
-        request_url = request._Request__original
-        get_params = request_url.split("?")
-        post_params = request.headers
-        if len(get_params) > 1:
-            params = get_params[1:]
-        elif post_params != {}:
-            params = post_params
-        else:
-            params = ""
-        if response_code < 400:
-            raise PassToolsException(message = fail_msg, http_status = response_code)
-        elif response_code == 400:
-            raise InvalidRequestException(message = fail_msg, param=params, http_status = response_code)
-        elif response_code == 401:
-            raise AuthenticationException(message = fail_msg, http_status = response_code)
-        elif response_code == 404:
-            raise InvalidRequestException(message = fail_msg, param=params, http_status = response_code)
-        elif response_code == 406:
-            raise InvalidRequestException(message = fail_msg, param=params, http_status = response_code)
-        elif response_code == 429:
-            raise TooManyRequestsException(message = fail_msg, http_status = response_code)
-        elif response_code >= 500:
-            raise InternalServerException(message = fail_msg, http_status = response_code)
-        else:
-            raise APIException()
+    request_data_dict = copy.deepcopy(request_data)
+    request_data_dict.update({"api_key":PassTools.api_key})
 
-    def __run_request(self, request):
-        response_code = None
-        response_data = {}
-        try:
-            # Open the request on the url
-            http_verbosity = 0     # For debugging purposes...turn it up to 10
-            opener = urllib2.build_opener(urllib2.HTTPHandler(http_verbosity))
-            request_handle = opener.open(request)
+    resp = request_func(request_url, params = request_data_dict, headers = STD_HEADERS, verify = SSL_CERT_VERIFY)
+    __raise_for_status(resp)
 
-            # Get the data from the response
-            response_code = request_handle.code
-            response_data = request_handle.read()
-            request_handle.close()
-            the_logger.debug("Response code: %d" % response_code)
+    resp.encoding = STD_ENCODING
+    # User can request raw response by setting test_mode = True; else returns will be json-decoded
+    # And hate to special case like this, but download needs special handling
+    if PassTools.test_mode or ('download' in request_url):
+        return resp
+    else:
+        return resp.json()
 
-        except urllib2.URLError, e:
-            fail_msg = "Error"
-            # If exception includes no status code but a reason, it's a URLError
-            if hasattr(e, 'reason'):
-                response_code = e.reason.errno
-                fail_msg = "Communication with host '%s' failed: %s (errno %s)" % (request.host, e.reason.strerror, response_code)
-             # else if exception includes an HTTP status code, it's an HTTPError
-            elif hasattr(e, 'code'):
-                response_code = e.code
-                fail_msg = "HTTPError (%s)" % response_code
-                if response_code < 500:
-                # If not a server error, read error details from the returned page
-                    try:
-                        err_page_info = e.read()
-                        if err_page_info.startswith("{"):
-                            err_page_dict = json.loads(err_page_info)
-                            if 'description' in err_page_dict:
-                                fail_msg += (" %s" % err_page_dict['description'])
-                            if 'details' in err_page_dict:
-                                if err_page_dict['details'] == "field errors" and "fieldErrors" in err_page_dict:
-                                    fail_msg += " Details:\n"
-                                    for err_item in err_page_dict['fieldErrors']:
-                                        fail_msg += err_item["message"] + "\n"
-                                else:
-                                    fail_msg += (" Details: '%s'" % err_page_dict['details'])
-                        else:
-                            match = re.search("(Problem accessing \S*) Reason:", err_page_info)
-                            if match:
-                                fail_msg += (" Details: '%s'" % match.group(1))
+def pt_get(request_url_frag, request_data = {}):
+    """
+    HTTP GET
 
-                    except:
-                        raise
-                else:
-                # For a server error, don't count on an error page
-                     if hasattr(e, 'msg'):
-                        fail_msg += (": %s" % e.msg)
+    @type request_func: function
+    @param request_func: Function requested
+    @type request_url_frag: str
+    @param request_url_frag: URL fragment (to be appended to base_URL)
+    @type request_data: dict
+    @param request_data: Request parameters
+    @return: json form of template full-form description
+    """
+    return __pt_request(requests.get, request_url_frag, request_data)
 
-            the_logger.error(fail_msg)
+def pt_post(request_url_frag, request_data = {}):
+    """
+    HTTP POST
 
-            self.__dispatch_exception(response_code, fail_msg, request)
+    @type request_func: function
+    @param request_func: Function requested
+    @type request_url_frag: str
+    @param request_url_frag: URL fragment (to be appended to base_URL)
+    @type request_data: dict
+    @param request_data: Request parameters
+    @return: json form of template full-form description
+    """
+    return __pt_request(requests.post, request_url_frag, request_data)
 
-        return response_code, response_data
+def pt_put(request_url_frag, request_data = {}):
+    """
+    HTTP PUT
 
-    def pt_get_json(self, request_url_frag, request_data_dict = {}):
-        """
-        Make an HTTP GET request of specified URL
+    @type request_func: function
+    @param request_func: Function requested
+    @type request_url_frag: str
+    @param request_url_frag: URL fragment (to be appended to base_URL)
+    @type request_data: dict
+    @param request_data: Request parameters
+    @return: json form of template full-form description
+    """
+    return __pt_request(requests.put, request_url_frag, request_data)
 
-        @type request_url_frag: str
-        @param request_url_frag: target URL (base_url will be prepended)
-        @type request_data_dict: dict
-        @param request_data_dict: any desired URL parameters
-        @return: HTTP request status code and response data as json.
-        """
-        # Assemble request url
-        request_url = "%s%s?api_key=%s" % (self.base_url, request_url_frag, self.api_key)
+def pt_delete(request_url_frag, request_data = {}):
+    """
+    HTTP DELETE
 
-        # Append any request data
-        for keyName in request_data_dict:
-            request_url += "&" + keyName + "=" + str(request_data_dict[keyName])
-
-        # create request
-        req = urllib2.Request(request_url)
-        the_logger.debug("pt_get request_url: %s" % request_url)
-
-        # and make the request
-        response_code, response_data = self.__run_request(req)
-        if response_code == 200:
-            the_logger.debug("pt_get response:\n%s" % (response_data))
-
-        return response_code, response_data
-
-    def pt_get_dict(self, request_url, request_data_dict = {}):
-        """
-        Make an HTTP GET request of specified URL
-
-        @type request_url: str
-        @param request_url: target URL (base_url will be prepended)
-        @type request_data_dict: dict
-        @param request_data_dict: any desired URL parameters
-        @return: HTTP request status code and response data as python dict.
-        """
-        response_code, response_data = self.pt_get_json(request_url, request_data_dict)
-        response_data_dict = {}
-        if response_code == 200:
-            response_data_dict = json.loads(response_data, encoding="ISO-8859-1")
-        return response_code, response_data_dict
-
-    def pt_post_json(self, request_url_frag, request_data):
-        """
-        Make an HTTP POST request of specified URL
-
-        @type request_url_frag: str
-        @param request_url_frag: target URL (base_url will be prepended)
-        @type request_data: dict
-        @param request_data: any desired URL parameters
-        @return: HTTP request status code and response data as json.
-        """
-        # Assemble request url
-        request_url = "%s%s" % (self.base_url, request_url_frag)
-
-        request_data_dict = copy.deepcopy(request_data)
-        # Append api_key to request
-        request_data_dict["api_key"] = self.api_key
-
-        # Format the input data
-        encoded_request_data = urllib.urlencode(request_data_dict)
-        the_logger.debug("encoded request_data: %s" % encoded_request_data)
-
-        # Prepare headers
-        headers = {}
-        headers['Content-Type'] = 'application/x-www-form-urlencoded'
-        headers['Accept'] = '*/*'
-
-        # create a request
-        req = urllib2.Request(request_url, encoded_request_data, headers=headers)
-        the_logger.debug("pt_post request_url: %s" % request_url)
-
-        # and make the request
-        response_code, response_data = self.__run_request(req)
-        if response_code == 200:
-            the_logger.debug("pt_post response:\n%s" % (response_data))
-
-        return response_code, response_data
-
-    def pt_post_dict(self, request_url, request_data):
-        """
-        Make an HTTP POST request of specified URL
-
-        @type request_url: str
-        @param request_url: target URL (base_url will be prepended)
-        @type request_data: dict
-        @param request_data: any desired URL parameters
-        @return: HTTP request status code and response data as python dict.
-        """
-        response_code, response_data = self.pt_post_json(request_url, request_data)
-        response_data_dict = {}
-        if response_code == 200:
-            response_data_dict = json.loads(response_data, encoding="ISO-8859-1")
-        return response_code, response_data_dict
-
-    def pt_put(self, request_url_frag, request_data = {}):
-        """
-        Make an HTTP PUT request of specified URL
-
-        @type request_url_frag: str
-        @param request_url_frag: target URL (base_url will be prepended)
-        @type request_data: dict
-        @param request_data: any desired URL parameters
-        @return: HTTP request status code and response data as json.
-        """
-        # Assemble request url
-        request_url = "%s%s" % (self.base_url, request_url_frag)
+    @type request_func: function
+    @param request_func: Function requested
+    @type request_url_frag: str
+    @param request_url_frag: URL fragment (to be appended to base_URL)
+    @type request_data: dict
+    @param request_data: Request parameters
+    @return: json form of template full-form description
+    """
+    return __pt_request(requests.delete, request_url_frag, request_data)
 
 
-        request_data_dict = copy.deepcopy(request_data)
-        # Append api_key to request
-        request_data_dict["api_key"] = self.api_key
+def __raise_for_status(response):
+    # Override the version in Requests so I can get better reporting
 
-        # Format the input data
-        encoded_request_data = urllib.urlencode(request_data_dict)
-        the_logger.debug("encoded request_data: %s" % encoded_request_data)
+    http_error_msg = ''
 
-        # Prepare headers
-        headers = {}
-        headers['Content-Type'] = 'application/x-www-form-urlencoded'
-        headers['Accept'] = '*/*'
+    if 400 <= response.status_code < 500:
 
-        # create a request
-        req = urllib2.Request(request_url, encoded_request_data, headers=headers)
-        req.get_method = lambda: 'PUT'
-        the_logger.debug("pt_put request_url: %s" % request_url)
+        decoded_content = ""
+        content_dict = json.loads(response.content, encoding='ISO-8859-1')
+        if "description" in content_dict:
+            decoded_content += content_dict['description'] + " "
+        if "details" in content_dict:
+            decoded_content += content_dict['details']
+        http_error_msg = '%s Client Error: %s. %s' % (response.status_code, response.reason, decoded_content)
 
-        # and make the request
-        response_code, response_data = self.__run_request(req)
+    elif 500 <= response.status_code < 600:
+        http_error_msg = '%s Server Error: %s' % (response.status_code, response.reason)
 
-        return response_code, response_data
+    if http_error_msg:
+        http_error = PassToolsException(http_status=response.status_code, message=http_error_msg, response=response)
+        http_error.response = response
+        raise http_error
 
-    def pt_put_json(self, request_url, request_data = {}):
-        """
-        Make an HTTP PUT request of specified URL
 
-        @type request_url: str
-        @param request_url: target URL (base_url will be prepended)
-        @type request_data: dict
-        @param request_data: any desired URL parameters
-        @return: HTTP request status code and response data as python dict.
-        """
-        response_code, response_data = self.pt_put(request_url, request_data)
-        response_data_json = None
-        if response_code == 200:
-            response_data_json = json.loads(response_data, encoding="ISO-8859-1")
-            the_logger.debug("pt_put response:\n%s" %
-                             json.dumps(response_data, sort_keys = True, indent = 2))
-        return response_code, response_data_json
-
-    def pt_delete(self, request_url_frag, request_data_dict):
-        """
-        Make an HTTP DELETE request of specified URL
-
-        @type request_url_frag: str
-        @param request_url_frag: target URL (base_url will be prepended)
-        @type request_data: dict
-        @param request_data: any desired URL parameters
-        @return: HTTP request status code and response data as json.
-        """
-        # Assemble request url
-        request_url = "%s%s?api_key=%s" % (self.base_url, request_url_frag, self.api_key)
-
-        # Append any request data
-        for keyName in request_data_dict:
-            request_url += "&" + keyName + "=" + str(request_data_dict[keyName])
-
-        # Prepare headers
-        headers = {}
-        headers['Content-Type'] = 'application/x-www-form-urlencoded'
-        headers['Accept'] = '*/*'
-
-        # create a request
-        req = urllib2.Request(request_url)
-        req.get_method = lambda: 'DELETE'
-        the_logger.debug("pt_put request_url: %s" % request_url)
-
-        # and make the request
-        response_code, response_data = self.__run_request(req)
-
-        return response_code, response_data
-
-    def pt_delete_json(self, request_url, request_data):
-        """
-        Make an HTTP DELETE request of specified URL
-
-        @type request_url: str
-        @param request_url: target URL (base_url will be prepended)
-        @type request_data: dict
-        @param request_data: any desired URL parameters
-        @return: HTTP request status code and response data as python dict.
-        """
-        response_code, response_data = self.pt_delete(request_url, request_data)
-        response_data_json = None
-        if response_code == 200:
-            response_data_json = json.loads(response_data, encoding="ISO-8859-1")
-            the_logger.debug("pt_delete response:\n%s" %
-                             json.dumps(response_data, sort_keys = True, indent = 2))
-        return response_code, response_data_json
-
+class PassToolsException(Exception):
+    def __init__(self, http_status=None, message=None, response=None):
+        super(PassToolsException, self).__init__(message)

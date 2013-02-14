@@ -3,6 +3,7 @@
 # Using the PassTools API
 # Example7: Adding and deleting Relevant Locations from passes
 #
+# BACKGROUND:
 # In general, the PassTools API expects to operate on passes generated from templates
 # in which NO Relevant Locations have been defined.
 #
@@ -54,13 +55,9 @@
 # Copyright 2013, Urban Airship, Inc.
 ##########################################
 
-import logging
-
 from passtools import PassTools
 from passtools.pt_pass import Pass
 from passtools.pt_template import Template
-
-logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.CRITICAL)
 
 # API User:
 # STEP 1: Retrieve your API key from your Account view on the PassTools website
@@ -75,13 +72,14 @@ PassTools.configure(api_key = my_api_key)
 # Start by retrieving a template using the same method used in Ex1_Templates.py
 # The first two steps are a bit contrived, since you would know the ID of the template
 # you wanted to use, but for this example we'll get the whole list and use the latest
-template_list = Template.list()
-the_template_id = template_list[0].id
+list_response = Template.list()
+template_header_list = list_response["templateHeaders"]
+the_template_id = template_header_list[0]['id']
 
-the_template = Template.get(the_template_id)
+get_response = Template.get(the_template_id)
 
 # Now create a new pass from the template.
-test_pass = Pass.create(the_template_id, the_template.fields_model)
+test_pass = Pass.create(the_template_id, get_response['fieldsModel'])
 
 print 25*"#"
 print "New Pass at start"
@@ -96,9 +94,11 @@ location_list_1=[{"latitude":37.4471107, "longitude":-122.16206219999998,
                     "streetAddress1":"408 Florence St", "streetAddress2":"",
                     "city":"Palo Alto", "region":"CA", "regionCode":"94301",
                     "country":"US", "relevantText":"Palo Alto Office!"}]
-Pass.add_locations(test_pass.id, location_list_1)
+add_response = Pass.add_locations(test_pass['id'], location_list_1)
+print "ADD_RESP", add_response
+
 print "After adding 1 location..."
-after_first_add = Pass.get(test_pass.id)
+after_first_add = Pass.get(test_pass['id'])
 print after_first_add
 print 25*"#"
 
@@ -113,9 +113,10 @@ location_list_2 =[{"latitude":45.5255003, "longitude":-122.6821440,
                    "streetAddress1":"41 Decatur", "streetAddress2":"",
                    "city":"San Francisco", "region":"CA", "regionCode":"94103",
                    "country":"US", "relevantText":"SF Office!"}]
-Pass.add_locations(test_pass.id, location_list_2)
+add_response = Pass.add_locations(test_pass['id'], location_list_2)
+
 print "After adding 2 more locations..."
-after_second_add = Pass.get(test_pass.id)
+after_second_add = Pass.get(test_pass['id'])
 print after_second_add
 print 25*"#"
 
@@ -129,19 +130,16 @@ print 25*"#"
 print 25*"#"
 location_ids = []
 print "Deleting locations from pass..."
-the_pass_dict = after_second_add.pass_dict
-if "passLocationFields" in the_pass_dict:
-    if "passLevel" in the_pass_dict["passLocationFields"]:
-        for loc_record in the_pass_dict["passLocationFields"]["passLevel"]:
+if "passLocationFields" in after_second_add:
+    if "passLevel" in after_second_add["passLocationFields"]:
+        for loc_record in after_second_add["passLocationFields"]["passLevel"]:
             location_ids.append(loc_record["id"])
 print "location_ids", location_ids
+
 for location_id in location_ids:
     print "deleting %s" % location_id
-    test_pass.delete_location(test_pass.id, location_id)
+    Pass.delete_location(test_pass['id'], location_id)
     print "After location deletion"
-    after_deletion = Pass.get(test_pass.id)
+    after_deletion = Pass.get(test_pass['id'])
     print after_deletion
 print 25*"#"
-
-# All done logging
-logging.shutdown()

@@ -15,7 +15,7 @@ try:
 except ImportError:
     import json
 
-from passtools import PassTools
+import pt_client
 
 class Template(object):
 
@@ -60,18 +60,10 @@ class Template(object):
 
         @type template_id: int
         @param template_id: ID of the template to retrieve
-        @return: pt_template.Template instance
+        @return: json form of template full-form description
         """
-        request_url = "/template/%s" % (str(template_id))
-        response_code, response_data_dict = PassTools.request_client.pt_get_dict(request_url)
-
-        new_template = None
-        if response_code == 200:
-            new_template = Template()
-            new_template.header = response_data_dict["templateHeader"]
-            new_template.fields_model = response_data_dict["fieldsModel"]
-
-        return new_template
+        request_url = "/template/%s" % (int(template_id))
+        return pt_client.pt_get(request_url)
 
     @classmethod
     def list(cls, **kwargs):
@@ -91,23 +83,11 @@ class Template(object):
         @param order: Name of field on which to sort list [Optional; From (ID, Name, Created, Updated)]
         @type direction: string
         @param direction: Direction which to sort list [Optional; From (ASC, DESC); Default = DESC]
-        @return: List of pt_template.Template instances
+        @return: json form of list of template header descriptions
         """
         request_dict = kwargs
         request_url = "/template/headers"
-        response_code, response_data_dict = PassTools.request_client.pt_get_dict(request_url, request_dict)
-
-        template_list = []
-        if response_code == 200:
-            dict_list = []
-            if "templateHeaders" in response_data_dict:
-                dict_list = response_data_dict["templateHeaders"]
-            for header_dict in dict_list:
-                new_template = Template()
-                new_template.header = header_dict
-                template_list.append(new_template)
-
-        return template_list
+        return pt_client.pt_get(request_url, request_dict)
 
     @classmethod
     def delete(cls, template_id):
@@ -118,11 +98,10 @@ class Template(object):
 
         @type template_id: int
         @param template_id: ID of the template to delete
-        @return: Response data
+        @return: json form of response data
         """
 
-        request_url = "/template/%s" % (str(template_id))
-        response_code, response_data = PassTools.request_client.pt_delete(request_url, {})
+        request_url = "/template/%d" % int(template_id)
+        return pt_client.pt_delete(request_url, {})
 
-        return response_data
 
