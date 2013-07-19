@@ -15,6 +15,7 @@ try:
 except ImportError:
     import json
 
+import urllib
 import pt_client
 
 class Template(object):
@@ -62,8 +63,20 @@ class Template(object):
         @param template_id: ID of the template to retrieve
         @return: json form of template full-form description
         """
-        request_url = "/template/%s" % (int(template_id))
+        request_url = "/template/%s" % int(template_id)
         return pt_client.pt_get(request_url)
+
+    @classmethod
+    def get_by_external_id(cls, template_external_id):
+        """
+
+        @param cls:
+        @param template_external_id:
+        @return:
+        """
+        request_url = "/template/id/%s" % template_external_id
+        return pt_client.pt_get(request_url)
+
 
     @classmethod
     def list(cls, **kwargs):
@@ -104,4 +117,83 @@ class Template(object):
         request_url = "/template/%d" % int(template_id)
         return pt_client.pt_delete(request_url, {})
 
+    @classmethod
+    def delete_by_external_id(cls, template_external_id):
+        """
 
+        @param cls:
+        @param template_external_id:
+        @return:
+        """
+        request_url = "/template/id/%d" % template_external_id
+        return pt_client.pt_delete(request_url, {})
+
+
+    @classmethod
+    def __create__(cls, request_url, template_info_dict, headers_dict, fields_dict):
+        result_dict = {}
+        result_dict.update(template_info_dict)
+        result_dict.update(headers_dict);
+        result_dict.update(fields_dict);
+        request_dict = {"json": json.dumps(result_dict, encoding="ISO-8859-1")}
+        request_url = "/template"
+        return pt_client.pt_post(request_url, request_dict)
+
+    @classmethod
+    def create(cls, template_info_dict, headers_dict, fields_dict, project_id = None):
+        """
+
+        @param cls:
+        @param template_info_dict:
+        @param headers_dict:
+        @param fields_dict:
+        @param project_id
+        @return:
+        """
+        request_url = "/template"
+        if project_id is not None:
+            request_url += "/%d" % int(project_id)
+        return cls.__create__(request_url, template_info_dict, headers_dict, fields_dict)
+
+    @classmethod
+    def create_by_external_id(cls,external_id, template_info_dict, headers_dict, fields_dict, project_id=None):
+        """
+
+        @param cls:
+        @param external_id:
+        @param template_info_dict:
+        @param header_dict:
+        @param fields_dict:
+        @return:
+        """
+        request_url = "/template"
+        if project_id is not None:
+            request_url += "/id/%d" % int(project_id)
+        request_url += "/id/%s" % urllib.quote_plus(external_id)
+        return cls.__create__(request_url, template_info_dict, headers_dict, fields_dict)
+
+
+
+
+    @classmethod
+    def duplicate(cls, template_id):
+        """
+
+        @param cls:
+        @param template_id:
+        @return:
+        """
+        request_url = "/template/duplicate/%d" % int(template_id)
+        return pt_client.pt_post(request_url,{})
+
+
+    @classmethod
+    def duplicate_by_external_id(cls, template_external_id):
+        """
+
+        @param cls:
+        @param template_external_id:
+        @return:
+        """
+        request_url = "/template/duplicate/id/%s" % urllib.quote_plus(template_external_id)
+        return pt_client.pt_post(request_url,{})

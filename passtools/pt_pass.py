@@ -16,6 +16,7 @@ try:
 except ImportError:
     import json
 
+import urllib
 import pt_client
 from passtools import PassTools
 
@@ -77,6 +78,47 @@ class Pass(object):
         return pt_client.pt_post(request_url, request_dict)
 
     @classmethod
+    def create_by_external_id(cls, template_id, pass_external_id, template_fields_model_dict):
+        """
+        Create new Pass from specified template.
+
+        API call used is v1/pass/<template_id>/id/<pass_external_id> (POST)
+
+        @type template_id: int
+        @param template_id: ID of the template used to create new pass
+        @param pass_external_id: external identifier for pass to be created (unique per user)
+        @type template_fields_model_dict: dict
+        @param template_fields_model_dict: template_fields_model dict of the template used to create new pass
+        @return: json form of template full-form description
+        """
+
+        request_url = "/pass/%d/id/%s" % (int(template_id), urllib.quote_plus(pass_external_id))
+        request_dict = {"json": json.dumps(template_fields_model_dict, encoding="ISO-8859-1")}
+        return pt_client.pt_post(request_url, request_dict)
+
+    @classmethod
+    def create_by_external_id_by_template_external_id(cls, template_external_id, pass_external_id,
+                                                      template_fields_model_dict):
+        """
+        Create new Pass from specified template.
+
+        API call used is v1/pass/id<template_external_id>/id/<pass_external_id> (POST)
+
+        @type template_id: int
+        @param template_external_id: id(external) of template created using external identifier
+        @param pass_external_id: external identifier for pass to be created (unique per user)
+        @type template_fields_model_dict: dict
+        @param template_fields_model_dict: template_fields_model dict of the template used to create new pass
+        @return: json form of template full-form description
+        """
+
+        request_url = "/pass/id/%s/id/%s" % (
+        urllib.quote_plus(template_external_id), urllib.quote_plus(pass_external_id))
+        request_dict = {"json": json.dumps(template_fields_model_dict, encoding="ISO-8859-1")}
+        return pt_client.pt_post(request_url, request_dict)
+
+
+    @classmethod
     def update(cls, pass_id, update_fields):
         """
         Update existing pass
@@ -95,6 +137,25 @@ class Pass(object):
         return pt_client.pt_put(request_url, request_dict)
 
     @classmethod
+    def update_by_external_id(cls, pass_external_id, update_fields):
+        """
+        Update existing pass
+
+        API call used is v1/pass/id/<pass_external_id> (PUT)
+
+        @type pass_id: int
+        @param pass_external_uid: external ID of the pass
+        @type update_fields: dict
+        @param update_fields: Pass.pass_dict dict
+        @return: json form of template full-form description
+        """
+
+        request_url = "/pass/id/%s" % urllib.quote_plus(pass_external_id)
+        request_dict = {"json": json.dumps(update_fields, encoding="ISO-8859-1")}
+        return pt_client.pt_put(request_url, request_dict)
+
+
+    @classmethod
     def push_update(cls, pass_id):
         """
         Update installed passes using push method
@@ -110,6 +171,21 @@ class Pass(object):
         return pt_client.pt_put(request_url)
 
     @classmethod
+    def push_update_by_external_id(cls, pass_external_id):
+        """
+        Update installed pass(identified by external ID) using push method
+
+        API call used is v1/pass/id/<pass_external_id>/push (PUT)
+
+        @type pass_external_id: string
+        @param pass_external_id: external ID of desired Pass
+        @return: Response data
+        """
+
+        request_url = "/pass/id/%s/push" % urllib.quote_plus(pass_external_id)
+        return pt_client.pt_put(request_url)
+
+    @classmethod
     def get(cls, pass_id):
         """
         Retrieve existing pass with specified ID
@@ -122,6 +198,20 @@ class Pass(object):
         """
 
         request_url = "/pass/%d" % int(pass_id)
+        return pt_client.pt_get(request_url, {})
+
+    @classmethod
+    def get_by_external_id(cls, pass_external_id):
+        """
+        Retrieve existing pass with specified external ID
+
+        API call used is v1/pass/id/<pass_id> (GET)
+
+        @param pass_external_id: string  (external id of the desired pass)
+        @return: json form of template full-form description
+        """
+
+        request_url = "/pass/id/%s" % urllib.quote_plus(pass_external_id)
         return pt_client.pt_get(request_url, {})
 
     @classmethod
@@ -153,6 +243,13 @@ class Pass(object):
         return pt_client.pt_get(request_url, request_dict)
 
     @classmethod
+    def __save_pass_to_file__(cls, response, filename):
+        if response is not None:
+            fh = open(filename, "wb")
+            fh.write(response.content)
+            fh.close();
+
+    @classmethod
     def download(cls, pass_id, destination_path):
         """
         Download pkpass file corresponding to existing pass with specified ID
@@ -170,10 +267,28 @@ class Pass(object):
         resp = pt_client.pt_get(request_url)
         if PassTools.test_mode:
             return resp
-        elif resp is not None:
-            fh = open(destination_path, "wb")
-            fh.write(resp.content)
-            fh.close()
+        cls.__save_pass_to_file__(resp, destination_path)
+
+    @classmethod
+    def download_by_external_id(cls, pass_external_id, destination_path):
+        """
+        Download pkpass file corresponding to existing pass with specified external ID
+
+        API call used is v1/pass/id/<pass_external_id>/download (GET)
+
+        @type pass_external_id: string
+        @param pass_external_id: external ID of desired Pass
+        @type destination_path: str
+        @param destination_path: path to receive pass file. Path must exist, and filename must end with ".pkpass"
+        @return: Writes pass to filesystem
+        """
+
+        request_url = "/pass/id/%s/download" % urllib.quote_plus(pass_external_id)
+        resp = pt_client.pt_get(request_url)
+        if PassTools.test_mode:
+            return resp
+        cls.__save_pass_to_file__(resp, destination_path)
+
 
     @classmethod
     def delete(cls, pass_id):
@@ -188,6 +303,21 @@ class Pass(object):
         """
 
         request_url = "/pass/%d" % int(pass_id)
+        return pt_client.pt_delete(request_url, {})
+
+    @classmethod
+    def delete_by_external_id(cls, pass_external_id):
+        """
+        delete existing pass identified by external ID
+
+        API call used is v1/pass/<pass_id> (DELETE)
+
+        @type pass_external_id: string
+        @param pass_external_id: external ID of Pass to delete
+        @return: json form of response data
+        """
+
+        request_url = "/pass/id/%s" % urllib.quote_plus(pass_external_id)
         return pt_client.pt_delete(request_url, {})
 
     @classmethod
@@ -209,6 +339,24 @@ class Pass(object):
         return pt_client.pt_post(request_url, request_dict)
 
     @classmethod
+    def add_locations_by_external_id(cls, pass_external_id, location_list):
+        """
+        add locations to an existing pass using external ID
+
+        API call used is v1/pass/id/<pass_external_id>/locations (POST)
+
+        @type pass_external_id: string
+        @param pass_external_id: External ID of the pass to add locations to
+        @type location_list: list
+        @param location_list: list of locations to add
+        @return: json form of response data
+        """
+
+        request_url = "/pass/id/%s/locations" % urllib.quote_plus(pass_external_id)
+        request_dict = {"json": json.dumps(location_list, encoding="ISO-8859-1")}
+        return pt_client.pt_post(request_url, request_dict)
+
+    @classmethod
     def delete_location(cls, pass_id, location_id):
         """
         delete existing location from pass
@@ -224,3 +372,88 @@ class Pass(object):
 
         request_url = "/pass/%d/location/%d" % (int(pass_id), int(location_id))
         return pt_client.pt_delete(request_url, {})
+
+    @classmethod
+    def delete_location_by_external_id(cls, pass_external_id, location_id):
+        """
+        delete existing location from pass identified by external ID
+
+        API call used is v1/pass/id/<pass_external_id>/location/<location_id> (DELETE)
+
+        @type pass_external_id: string
+        @param pass_external_id: external ID of the pass to delete from
+        @type location_id: int
+        @param location_id: ID of the location to delete
+        @return: json form of response data
+        """
+
+        request_url = "/pass/id/%s/location/%d" % (urllib.quote_plus(pass_external_id), int(location_id))
+        return pt_client.pt_delete(request_url, {})
+
+    @classmethod
+    def add_tags(cls, pass_id, tags_dict):
+        """
+
+        @param cls:
+        @param pass_id:
+        @param tags_dict:
+        @return:
+        """
+        request_url = "/pass/%d/tags" % int(pass_id)
+        return pt_client.pt_put(request_url, tags_dict)
+
+    @classmethod
+    def add_tags_by_external_id(cls, pass_external_id, tags_dict):
+        """
+
+        @param cls:
+        @param pass_external_id:
+        @param tags_dict:
+        @return:
+
+        """
+        request_url = "/pass/id/%s/tags" % urllib.quote_plus(pass_external_id)
+        return pt_client.pt_put(request_url, tags_dict)
+
+    @classmethod
+    def get_tags(cls, pass_id):
+        """
+
+        @param cls:
+        @param pass_id:
+        @return:
+        """
+        request_url = "/pass/%d/tags" % int(pass_id)
+        return pt_client.pt_get(request_url)
+
+    @classmethod
+    def get_tags_by_external_id(cls, external_pass_id):
+        """
+
+        @param cls:
+        @param external_pass_id:
+        @return:
+        """
+        request_url = "/pass/id/%s/tags" % urllib.quote_plus(external_pass_id)
+        return pt_client.pt_get(request_url)
+
+    @classmethod
+    def view_json_pass(cls, pass_id):
+        """
+
+        @param cls:
+        @return:
+        """
+        request_url = "/pass/%d/viewJSONPass" % int(pass_id)
+        return pt_client.pt_get(request_url)
+
+    @classmethod
+    def view_json_pass_by_external_id(cls, pass_external_id):
+        """
+
+        @param cls:
+        @return:
+        """
+        request_url = "/pass/id/%s/viewJSONPass" % urllib.quote_plus(pass_external_id)
+        return pt_client.pt_get(request_url)
+

@@ -1,7 +1,10 @@
 *.pyc
+*.iml
 .DS_Store
 
 dist/
 build/
 MANIFEST
 *.egg-info
+.idea/
+.idea/*

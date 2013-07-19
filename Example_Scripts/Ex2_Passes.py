@@ -15,6 +15,7 @@
 
 import copy
 import sys
+import time
 
 from passtools import PassTools
 from passtools.pt_pass import Pass
@@ -23,11 +24,13 @@ from passtools.pt_template import Template
 # API User:
 # STEP 1: Retrieve your API key from your Account view on the PassTools website
 my_api_key = "your-key-goes-in-here"
+my_api_key = "test"
+my_base_url="http://localhost:8080/v1";
 
 # STEP 2:
 # You'll always configure the api, providing your api key.
 # This is required!
-PassTools.configure(api_key = my_api_key)
+PassTools.configure(api_key = my_api_key, base_url = my_base_url)
 
 # First, we'll use 'list' to retrieve a list of pass headers we own (in abbreviated format)
 # Note that, as with templates, default sort order of the list is most-recent-first
@@ -39,20 +42,23 @@ print "And that the list of pass descriptions proper is under the 'Passes' key\n
 print "Note also that you can retrieve passes associated with a specific template"
 
 list_response = Pass.list()
-print "Total count of passes for this user:", list_response['Count']
-print "Page size", list_response['PageSize']
-print "Page number", list_response['Page']
-print "Order by", list_response['OrderField']
-print "Order direction", list_response['OrderDirection']
-for item in list_response['Passes']:
+print "Total count of passes for this user:", list_response['count']
+
+pagination = list_response['pagination']
+print "Page size", pagination['pageSize']
+print "Page number", pagination['page']
+print "Order by", pagination['order']
+print "Order direction", pagination['direction']
+for item in list_response['passes']:
     print item
 print 25*"#", "\n"
+
 
 # Next, we'll retrieve the full form of a pass
 # You might retrieve a pass, for example, in preparation for updating it.
 # Normally, you'd know the ID of the pass you wanted--we'll just grab an id from the list above
 print 25*"#"
-the_pass_id = int(list_response['Passes'][0]['id'])
+the_pass_id = int(list_response['passes'][0]['id'])
 
 print "Retrieving Pass #%s" % the_pass_id
 get_response = Pass.get(the_pass_id)
@@ -109,7 +115,7 @@ print 25*"#"
 # pass to use as input...we'll the pass we just created, so the script output will allow you to compare before/after update.
 # Make a copy of the fields to operate on
 
-pass_fields = copy.deepcopy(create_response["passFields"])
+pass_fields = copy.deepcopy(create_response["fields"])
 print 25*"#"
 print "Start pass update test..."
 # modify fields here...as an example:
@@ -127,18 +133,20 @@ update_response = Pass.update(new_pass_id, pass_fields)
 print "Response from pass update..."
 print update_response
 
-get_response = Pass.get(update_response['id'])
+# sleep for few secs since update is async call
+time.sleep(5)  # sometimes you need wait for longer
 
-print "Updated Pass..."
-print get_response
 # Note that, after the update, the ID is the same, the serial number is the same,
 # and any changes you passed in have been incorporated.
 # If you send the updated pass to a user who has already installed the previous version,
 # they'll see an "Update" button instead of an "Add" button in the iOS UI.
 
 # Btw, you can instantiate a Pass, which gives you some convenience features like pretty-print:
+get_response = Pass.get(new_pass_id)
 updated_pass = Pass()
 updated_pass.pass_dict = get_response
+print "Get Pass After Update..."
+print get_response
 
 print "Updated pass as object"
 print updated_pass

@@ -6,19 +6,39 @@
 # Copyright 2013, Urban Airship, Inc.
 ##########################################
 
+try:
+    import simplejson as json
+except ImportError:
+    import json
 import sys
 
 from passtools import PassTools
 from passtools.pt_template import Template
+from testdata import TestData
 
 # API User:
 # STEP 1: Retrieve your API key from your Account view on the PassTools website
-my_api_key = "your-key-goes-in-here"
+my_api_key = "test"
+my_base_url="http://localhost:8080/v1";
 
 # STEP 2:
 # You'll always configure the api, providing your api key.
 # This is required!
-PassTools.configure(api_key = my_api_key)
+PassTools.configure(api_key = my_api_key, base_url =  my_base_url)
+
+print "################test##################"
+
+template = Template()
+test_data = TestData()
+template_dict = {'name' : 'py_test_template', 'description' : 'py_template_desc', 'type': 'boardingPass', 'projectType': 'boardingPass', 'vendor':'Apple'}
+headers = test_data.template_headers
+fields = test_data.template_fields
+#headers = '{"headers" : {"test" : "hello"}}'
+headers_dict = json.loads(headers)
+fields_dict = json.loads(fields)
+response = Template.create(template_info_dict=template_dict,headers_dict=headers_dict, fields_dict=fields_dict)
+
+print "##############endtest"
 
 # The 'list' operation retrieves a list of headers of templates created by the user referenced by the api_key.
 # As headers, the retrieved items do not include the complete template.fields_model,
@@ -32,10 +52,12 @@ print "And that the list of template headers proper is under the 'templateHeader
 
 list_response = Template.list()
 print "Total count of templates for this user:", list_response['count']
-print "Page size", list_response['pageSize']
-print "Page number", list_response['page']
-print "Order by", list_response['orderField']
-print "Order direction", list_response['orderDirection']
+pagination = list_response['pagination']
+print "Page size", pagination['pageSize']
+print "Page number", pagination['page']
+print "Order by", pagination['order']
+print "Order direction", pagination['direction']
+
 for item in list_response['templateHeaders']:
     print item
 print 25*"#", "\n"
@@ -79,3 +101,16 @@ except:
     info = sys.exc_info()
     print info[1]
 print 25*"#"
+
+
+#create template example
+
+
+
+template = Template();
+template_dict = {'name' : 'py_test_template', 'description' : 'py_template_desc', 'type': 'boardingPass', 'projectType': 'boardingPass', 'vendor':'Apple'}
+headers = TestData.template_headers
+fields = TestData.template_fields
+header_dict = json.loads(headers)
+fields_dict = json.loads(fields)
+template.create(template_info_dict=template_dict,header_dict=header_dict, fields_dict=fields_dict)

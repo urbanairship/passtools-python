@@ -23,7 +23,7 @@ from passtools import PassTools
 
 SSL_CERT_VERIFY = False
 STD_ENCODING = "ISO-8859-1"
-STD_HEADERS = {'Content-Type':'application/x-www-form-urlencoded', 'Accept':'*/*'}
+STD_HEADERS = {'Content-Type':'application/x-www-form-urlencoded', 'Accept':'*/*' ,'Api-Revision':1.2}
 
 def __pt_request(request_func, request_url_frag, request_data = {}):
     """
