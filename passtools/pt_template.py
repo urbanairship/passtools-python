@@ -10,11 +10,7 @@
 Define and provide methods for manipulating PassTools Template objects.
 
 """
-try:
-    import simplejson as json
-except ImportError:
-    import json
-
+import json
 import urllib
 import pt_client
 

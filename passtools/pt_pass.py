@@ -11,11 +11,7 @@ Define and provide methods for manipulating PassTools Pass objects.
 
 """
 
-try:
-    import simplejson as json
-except ImportError:
-    import json
-
+import json
 import urllib
 import pt_client
 from passtools import PassTools

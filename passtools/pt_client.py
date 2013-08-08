@@ -13,11 +13,7 @@ HTTP interface to PassTools REST API, used indirectly, via other PassTools class
 
 import copy
 import requests
-
-try:
-    import simplejson as json
-except ImportError:
-    import json
+import json
 
 from passtools import PassTools
 
@@ -37,6 +33,7 @@ def __pt_request(request_func, request_url_frag, request_data = {}):
     @param request_data: Request parameters
     @return: json form of template full-form description
     """
+
     if not PassTools.api_key:
         raise RuntimeError("No API secret key provided. Cannot continue.")
     request_url = "%s%s" % (PassTools.base_url, request_url_frag)
@@ -114,17 +111,16 @@ def pt_delete(request_url_frag, request_data = {}):
 
 def __raise_for_status(response):
     # Override the version in Requests so I can get better reporting
-
     http_error_msg = ''
 
     if 400 <= response.status_code < 500:
-
         decoded_content = ""
-        content_dict = json.loads(response.content, encoding='ISO-8859-1')
-        if "description" in content_dict:
-            decoded_content += content_dict['description'] + " "
-        if "details" in content_dict:
-            decoded_content += content_dict['details']
+        if response.content:
+            content_dict = json.loads(response.content, encoding='ISO-8859-1')
+            if "description" in content_dict:
+                decoded_content += content_dict['description'] + " "
+            if "details" in content_dict:
+                decoded_content += content_dict['details']
         http_error_msg = '%s Client Error: %s. %s' % (response.status_code, response.reason, decoded_content)
 
     elif 500 <= response.status_code < 600:
