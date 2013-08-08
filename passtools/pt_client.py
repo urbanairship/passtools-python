@@ -36,12 +36,12 @@ def __pt_request(request_func, request_url_frag, request_data = {}):
 
     if not PassTools.api_key:
         raise RuntimeError("No API secret key provided. Cannot continue.")
+
     request_url = "%s%s" % (PassTools.base_url, request_url_frag)
+    params = {"api_key": PassTools.api_key}
 
-    request_data_dict = copy.deepcopy(request_data)
-    request_data_dict.update({"api_key":PassTools.api_key})
-
-    resp = request_func(request_url, params = request_data_dict, headers = STD_HEADERS, verify = SSL_CERT_VERIFY)
+    resp = request_func(request_url, params=params, data=request_data,
+                        headers=STD_HEADERS, verify=SSL_CERT_VERIFY)
     __raise_for_status(resp)
 
     resp.encoding = STD_ENCODING
