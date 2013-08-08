@@ -1,8 +1,4 @@
-try:
-    import simplejson as json
-except ImportError:
-    import json
-
+import json
 import urllib
 from urllib import quote_plus
 import pt_client

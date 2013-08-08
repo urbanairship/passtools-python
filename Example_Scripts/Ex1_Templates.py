@@ -6,10 +6,7 @@
 # Copyright 2013, Urban Airship, Inc.
 ##########################################
 
-try:
-    import simplejson as json
-except ImportError:
-    import json
+import json
 import sys
 
 from passtools import PassTools
